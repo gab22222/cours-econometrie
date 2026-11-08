@@ -68,6 +68,7 @@ p{margin:0 0 16px}
 .tw.bb table{font-size:12.5px}
 .tw.bb th,.tw.bb td{padding:4px 7px;white-space:nowrap;text-align:right}
 .tw.bb th:first-child{text-align:left}
+.exercise code{font:13.5px/1.5 Menlo,Consolas,monospace;background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:1px 5px;overflow-wrap:anywhere}
 table{border-collapse:collapse;width:100%;font-size:15px}
 th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
 th{color:var(--muted);font-weight:600}
@@ -1211,14 +1212,77 @@ details>div{padding:0 16px 8px;font-size:15.5px}
 <figure class="fig"><svg viewBox="0 0 640 148" role="img" aria-label="Barre de cent pour cent : individus 67,8 %, périodes 4,0 %, résidu 28,2 % de la variabilité du solde courant" xmlns="http://www.w3.org/2000/svg"><rect x="40.0" y="40.0" width="376.3" height="32.0" rx="3" class="f1"/><rect x="418.3" y="40.0" width="20.5" height="32.0" rx="3" class="f2"/><rect x="440.9" y="40.0" width="155.1" height="32.0" rx="3" class="fm"/><text x="40.0" y="30.0" class="t-s t-b">Part de la variabilité totale de y<tspan dy="3" font-size="9">it</tspan><tspan dy="-3"> (SCT = 22 122,72)</tspan></text><line x1="229.2" y1="76.0" x2="229.2" y2="90.0" class="k"/><text x="229.2" y="104.0" class="t-s" text-anchor="middle">individus : 67,8 % (F = 38,52)</text><line x1="429.6" y1="76.0" x2="429.6" y2="122.0" class="k"/><text x="435.6" y="136.0" class="t-s" text-anchor="middle">périodes : 4,0 % (F = 4,88)</text><line x1="519.4" y1="76.0" x2="519.4" y2="90.0" class="k"/><text x="519.4" y="104.0" class="t-s" text-anchor="middle">résidu : 28,2 %</text></svg><figcaption>Exercice CM 1 : les différences entre pays expliquent plus des deux tiers de la variabilité du solde courant (bleu). L’effet des années (orange) est petit mais significatif ; le résidu (gris) reste important.</figcaption></figure>
 <p><strong>3°) Test de présence des effets individuels.</strong></p>
 <p>H<sub>0</sub> : a<sub>1</sub> = a<sub>2</sub> = … = a<sub>35</sub> (pas d’effet individuel). H<sub>1</sub> : au moins un a<sub>i</sub> diffère.</p>
-<p>F<sub>cal</sub><sup>ind</sup> = 38,52, à comparer à une loi de Fisher F(34, 544). Valeurs lues : F<sub>lu</sub><sup>1 %</sup>(34, 544) = 1,68 ; F<sub>lu</sub><sup>5 %</sup>(34, 544) = 1,45 ; F<sub>lu</sub><sup>10 %</sup>(34, 544) = 1,34.</p>
-<p>Règle de décision : F<sub>cal</sub><sup>ind</sup> = 38,52 &gt; F<sub>lu</sub><sup>1 %</sup> = 1,68 ⇒ <strong>rejet de H<sub>0</sub> au seuil de 1 %</strong>. Il y a des effets individuels : les pays ont des niveaux moyens de solde courant différents.</p>
+<p>F<sub>cal</sub><sup>ind</sup> = 38,52, à comparer à une loi de Fisher F(34, 544). Valeurs lues : F<sub>lu</sub><sup>1 %</sup>(34, 544) = 1,69 ; F<sub>lu</sub><sup>5 %</sup>(34, 544) = 1,45 ; F<sub>lu</sub><sup>10 %</sup>(34, 544) = 1,34.</p>
+<p>Règle de décision : F<sub>cal</sub><sup>ind</sup> = 38,52 &gt; F<sub>lu</sub><sup>1 %</sup> = 1,69 ⇒ <strong>rejet de H<sub>0</sub> au seuil de 1 %</strong>. Il y a des effets individuels : les pays ont des niveaux moyens de solde courant différents.</p>
 <p><strong>4°) Test de présence des effets temporels (effet tendance).</strong></p>
 <p>H<sub>0</sub> : b<sub>1</sub> = b<sub>2</sub> = … = b<sub>17</sub> = 0 (pas d’effet temporel). H<sub>1</sub> : au moins un b<sub>t</sub> est non nul.</p>
 <p>F<sub>cal</sub><sup>temp</sup> = 4,88, à comparer à une loi de Fisher F(16, 544). Valeurs lues : F<sub>lu</sub><sup>1 %</sup>(16, 544) = 2,03 ; F<sub>lu</sub><sup>5 %</sup>(16, 544) = 1,66 ; F<sub>lu</sub><sup>10 %</sup>(16, 544) = 1,48.</p>
 <p>Règle de décision : F<sub>cal</sub><sup>temp</sup> = 4,88 &gt; F<sub>lu</sub><sup>1 %</sup> = 2,03 ⇒ <strong>rejet de H<sub>0</sub> au seuil de 1 %</strong>. Il y a des effets temporels : les moyennes annuelles <span class="cm">ȳ</span><sub>.t</sub> passent par exemple de −2,22 en 2008 à 2,78 en 2016.</p>
 <p><strong>5°) Conclusion.</strong> Les deux types d’effets sont significatifs au seuil de 1 %, mais leur poids est très différent : les différences entre pays expliquent 67,80 % de la variabilité de y<sub>it</sub>, les différences entre années seulement 4,04 %. Une régression MCO avec une constante unique β<sub>4</sub> pour tous les pays et toutes les années est donc mal adaptée : il faut laisser la constante varier selon les pays (β<sub>4i</sub>) et, éventuellement, selon les années. C’est le <strong>modèle à effets fixes</strong> du chapitre 2.</p>
 <div class="eq">y<sub>it</sub> = β<sub>1</sub> ln PIB<sub>it</sub> + β<sub>2</sub> ln(r<sub>it</sub> + 1) + β<sub>3</sub> ln te<sub>it</sub> + β<sub>4i</sub> + u<sub>it</sub></div>
+</div></details>
+</div></details>
+<details class="exercise" id="panel-exercice-td1"><summary>Exercice TD 1 · Les traitements des données</summary><div>
+<p><strong>Énoncé</strong></p>
+<p>On reprend les données de l’Exercice CM 1 : le solde du compte courant de <strong>35 pays</strong> de l’OCDE sur <strong>2000-2016</strong> (n = 35, p = 17, np = 595 observations), dans le fichier tableur <em>OCDE_cylindré.ods</em> (LibreOffice ou OpenOffice). La variable dépendante est y<sub>it</sub> = CC<sub>it</sub> / PIB<sub>it</sub> (colonne <em>CCoverGDP</em>), dans le modèle :</p>
+<div class="eq">y<sub>it</sub> = β<sub>1</sub> ln PIB<sub>it</sub> + β<sub>2</sub> ln(r<sub>it</sub> + 1) + β<sub>3</sub> ln te<sub>it</sub> + β<sub>4</sub> + u<sub>it</sub></div>
+<p>Pour chaque question, ouvrez une nouvelle feuille dans le fichier.</p>
+<ol>
+<li>Calculez la somme des carrés totaux de la variable dépendante.</li>
+<li>Calculez les moyennes individuelles sur la période 2000-2016. Pour cela, mettez les données sous le format d’un panel de séries longitudinales.</li>
+<li>Calculez les moyennes temporelles sur l’ensemble de l’échantillon. Pour cela, mettez les données sous le format d’un panel de séries transversales.</li>
+<li>Décomposez la somme des carrés totaux entre ses dimensions individuelle et temporelle.</li>
+<li>Construisez le tableau de Buys-Ballot.</li>
+<li>Construisez le tableau de la variance.</li>
+</ol>
+<details class="correction"><summary>Voir le corrigé</summary><div>
+<p class="muted">Le fichier a une ligne par couple (pays, année) : colonne A = pays (<em>location</em>), B = année (<em>time</em>), D = y<sub>it</sub>, lignes 2 à 596. Les formules sont écrites pour LibreOffice en français.</p>
+<p><strong>1°) La somme des carrés totaux.</strong> On calcule d’abord la moyenne générale, puis l’écart au carré de chaque observation à cette moyenne, et on additionne :</p>
+<div class="eq"><span class="cm">ȳ</span><sub>..</sub> = (1/np) Σ<sub>i=1..n</sub> Σ<sub>t=1..p</sub> y<sub>it</sub> = (1/595) Σ y<sub>it</sub> = <b>0,2284</b><br>SCT = Σ<sub>i=1..35</sub> Σ<sub>t=1..17</sub> (y<sub>it</sub> − <span class="cm">ȳ</span><sub>..</sub>)² = <b>22 122,72</b></div>
+<p>Dans le tableur : <code>=SOMME(D2:D596)/595</code> pour <span class="cm">ȳ</span><sub>..</sub> (ou <code>=MOYENNE(D2:D596)</code>), puis une colonne <code>=(D2-$E$2)^2</code> recopiée vers le bas, et <code>=SOMME(…)</code> de cette colonne. Exemple : pour l’Australie en 2000, y = −3,921, donc (−3,921 − 0,228)² = 17,216.</p>
+<p><strong>2°) Les moyennes individuelles.</strong> Format <em>séries longitudinales</em> : on trie les données par pays, puis par année. Les 17 années de chaque pays se suivent. La moyenne du pays i est :</p>
+<div class="eq"><span class="cm">ȳ</span><sub>i.</sub> = (1/p) Σ<sub>t=1..p</sub> y<sub>it</sub> = (1/17) Σ<sub>t=1..17</sub> y<sub>it</sub></div>
+<p>Dans le tableur : <code>=MOYENNE.SI($A$2:$A$596;A2;$D$2:$D$596)</code> (moyenne des lignes du même pays), ou la somme de chaque bloc de 17 lignes divisée par 17. Résultats :</p>
+<div class="tw bb"><table>
+<tr><th>Pays</th><th><span class="cm">ȳ</span><sub>i.</sub></th><th>Pays</th><th><span class="cm">ȳ</span><sub>i.</sub></th><th>Pays</th><th><span class="cm">ȳ</span><sub>i.</sub></th><th>Pays</th><th><span class="cm">ȳ</span><sub>i.</sub></th><th>Pays</th><th><span class="cm">ȳ</span><sub>i.</sub></th></tr>
+<tr><th>AUS</th><td>−4,544</td><th>DEU</th><td>5,010</td><th>HUN</th><td>−2,904</td><th>LUX</th><td>7,810</td><th>PRT</th><td>−6,718</td></tr>
+<tr><th>AUT</th><td>2,026</td><th>DNK</th><td>6,116</td><th>IRL</th><td>0,014</td><th>LVA</th><td>−5,972</td><th>RUS</th><td>5,446</td></tr>
+<tr><th>BEL</th><td>1,434</td><th>ESP</th><td>−3,724</td><th>ISL</th><td>−6,372</td><th>MEX</th><td>−1,796</td><th>SVK</th><td>−4,071</td></tr>
+<tr><th>CAN</th><td>−0,744</td><th>FIN</th><td>2,543</td><th>ISR</th><td>2,166</td><th>NLD</th><td>8,206</td><th>SVN</th><td>0,218</td></tr>
+<tr><th>CHE</th><td>10,775</td><th>FRA</th><td>−0,082</td><th>ITA</th><td>−0,626</td><th>NOR</th><td>12,453</td><th>SWE</th><td>5,752</td></tr>
+<tr><th>CHL</th><td>−1,375</td><th>GBR</th><td>−2,782</td><th>JPN</th><td>2,885</td><th>NZL</th><td>−3,882</td><th>USA</th><td>−3,764</td></tr>
+<tr><th>CZE</th><td>−2,608</td><th>GRC</th><td>−7,159</td><th>KOR</th><td>3,055</td><th>POL</th><td>−5,747</td><th>ZAF</th><td>−3,045</td></tr>
+</table></div>
+<p>On ajoute la colonne (<span class="cm">ȳ</span><sub>i.</sub> − <span class="cm">ȳ</span><sub>..</sub>)², recopiée sur les 595 lignes (chaque valeur est répétée 17 fois). Sa somme est SCE<sub>ind</sub> :</p>
+<div class="eq">SCE<sub>ind</sub> = Σ<sub>i</sub> Σ<sub>t</sub> (<span class="cm">ȳ</span><sub>i.</sub> − <span class="cm">ȳ</span><sub>..</sub>)² = p Σ<sub>i=1..35</sub> (<span class="cm">ȳ</span><sub>i.</sub> − <span class="cm">ȳ</span><sub>..</sub>)² = 17 × 882,3022 = <b>14 999,14</b></div>
+<p><strong>3°) Les moyennes temporelles.</strong> Format <em>séries transversales</em> : on trie les données par année, puis par pays. Les 35 pays de chaque année se suivent. La moyenne de l’année t est :</p>
+<div class="eq"><span class="cm">ȳ</span><sub>.t</sub> = (1/n) Σ<sub>i=1..n</sub> y<sub>it</sub> = (1/35) Σ<sub>i=1..35</sub> y<sub>it</sub></div>
+<p>Dans le tableur : <code>=MOYENNE.SI($B$2:$B$596;B2;$D$2:$D$596)</code>, ou la somme de chaque bloc de 35 lignes divisée par 35. Résultats :</p>
+<div class="tw bb"><table>
+<tr><th>Année</th><th>2000</th><th>2001</th><th>2002</th><th>2003</th><th>2004</th><th>2005</th><th>2006</th><th>2007</th><th>2008</th><th>2009</th><th>2010</th><th>2011</th><th>2012</th><th>2013</th><th>2014</th><th>2015</th><th>2016</th></tr>
+<tr><th><span class="cm">ȳ</span><sub>.t</sub></th><td>−0,570</td><td>−0,176</td><td>0,236</td><td>−0,038</td><td>0,102</td><td>−0,344</td><td>−0,899</td><td>−1,371</td><td>−2,217</td><td>−0,033</td><td>0,389</td><td>0,005</td><td>0,594</td><td>1,610</td><td>1,612</td><td>2,199</td><td>2,785</td></tr>
+</table></div>
+<p>De même, la colonne (<span class="cm">ȳ</span><sub>.t</sub> − <span class="cm">ȳ</span><sub>..</sub>)², recopiée sur les 595 lignes (chaque valeur est répétée 35 fois), donne :</p>
+<div class="eq">SCE<sub>temp</sub> = Σ<sub>i</sub> Σ<sub>t</sub> (<span class="cm">ȳ</span><sub>.t</sub> − <span class="cm">ȳ</span><sub>..</sub>)² = n Σ<sub>t=1..17</sub> (<span class="cm">ȳ</span><sub>.t</sub> − <span class="cm">ȳ</span><sub>..</sub>)² = 35 × 25,5439 = <b>894,04</b></div>
+<p><strong>4°) La décomposition de la SCT.</strong> Avec le modèle y<sub>it</sub> = a<sub>i</sub> + b<sub>t</sub> + u<sub>it</sub> :</p>
+<div class="eq">SCT = SCE<sub>ind</sub> + SCE<sub>temp</sub> + SCR<br>22 122,72 = 14 999,14 + 894,04 + 6 229,54</div>
+<p>On obtient SCR par différence : SCR = 22 122,72 − 14 999,14 − 894,04 = <b>6 229,54</b>. On peut aussi le vérifier directement : on crée la colonne des résidus u<sub>it</sub> = y<sub>it</sub> − <span class="cm">ȳ</span><sub>i.</sub> − <span class="cm">ȳ</span><sub>.t</sub> + <span class="cm">ȳ</span><sub>..</sub> (leur somme vaut 0), puis la colonne u<sub>it</sub>², dont la somme redonne 6 229,54. Exemple : pour l’Australie en 2000, u = −3,921 − (−4,544) − (−0,570) + 0,228 = 1,422.</p>
+<p>En parts de la SCT : individus 14 999,14 / 22 122,72 = <b>67,80 %</b> ; périodes 894,04 / 22 122,72 = <b>4,04 %</b> ; résidu 6 229,54 / 22 122,72 = <b>28,16 %</b>.</p>
+<p><strong>5°) Le tableau de Buys-Ballot.</strong> On le construit avec une <strong>table dynamique</strong> (menu Données ▸ Table dynamique) : <em>location</em> en champ de ligne, <em>time</em> en champ de colonne, la somme de <em>CCoverGDP</em> en champ de données. On obtient un tableau de 35 lignes (pays) × 17 colonnes (années), avec les totaux de chaque ligne et de chaque colonne. On ajoute ensuite :</p>
+<ul><li>à droite, <span class="cm">ȳ</span><sub>i.</sub> = total de la ligne / 17 et (<span class="cm">ȳ</span><sub>i.</sub> − <span class="cm">ȳ</span><sub>..</sub>)² ;</li>
+<li>en bas, <span class="cm">ȳ</span><sub>.t</sub> = total de la colonne / 35 et (<span class="cm">ȳ</span><sub>.t</sub> − <span class="cm">ȳ</span><sub>..</sub>)² ;</li>
+<li>dans le coin, <span class="cm">ȳ</span><sub>..</sub> = total général / 595 = 135,90 / 595 = 0,2284, et les deux sommes Σ<sub>i</sub>(<span class="cm">ȳ</span><sub>i.</sub> − <span class="cm">ȳ</span><sub>..</sub>)² = 882,3022 et Σ<sub>t</sub>(<span class="cm">ȳ</span><sub>.t</sub> − <span class="cm">ȳ</span><sub>..</sub>)² = 25,5439.</li></ul>
+<p>Le tableau complet obtenu est celui du corrigé de l’Exercice CM 1 ci-dessus (« Voir le tableau de Buys-Ballot complet »). Les moyennes trouvées aux questions 2 et 3 se retrouvent dans ses marges.</p>
+<p><strong>6°) Le tableau de la variance.</strong></p>
+<div class="tw"><table>
+<tr><th>Source de variation</th><th>Somme des carrés</th><th>ddl</th><th>Somme des carrés ajustée</th><th>F<sub>cal</sub></th><th>F<sub>lu</sub> (1 %)</th><th>R²</th></tr>
+<tr><td>a<sub>1</sub>, …, a<sub>35</sub></td><td class="f">14 999,14</td><td>34</td><td class="f">(a) = 441,15</td><td class="f">38,52</td><td>1,69</td><td class="f">67,80 %</td></tr>
+<tr><td>b<sub>1</sub>, …, b<sub>17</sub></td><td class="f">894,04</td><td>16</td><td class="f">(b) = 55,88</td><td class="f">4,88</td><td>2,03</td><td class="f">4,04 %</td></tr>
+<tr><td>u<sub>it</sub></td><td class="f">6 229,54</td><td>544</td><td class="f">(c) = 11,45</td><td>—</td><td>—</td><td class="f">28,16 %</td></tr>
+<tr><td>y<sub>it</sub></td><td class="f">22 122,72</td><td>594</td><td class="f">37,24</td><td>—</td><td>—</td><td class="f">100,00 %</td></tr>
+</table></div>
+<p>Les sommes des carrés sont SCE<sub>ind</sub>, SCE<sub>temp</sub>, SCR et SCT ; les ddl sont n − 1 = 34, p − 1 = 16, (n − 1)(p − 1) = 544 et np − 1 = 594. Avec (a) = SCE<sub>ind</sub>/(n − 1), (b) = SCE<sub>temp</sub>/(p − 1), (c) = SCR/((n − 1)(p − 1)), F<sub>cal</sub><sup>ind</sup> = (a)/(c) et F<sub>cal</sub><sup>temp</sup> = (b)/(c). La dernière ligne, SCT/(np − 1) = 37,24, est la variance de y<sub>it</sub> : sa racine carrée est l’écart-type σ<sub>y</sub> = 6,1028 donné dans l’Exercice CM 1.</p>
+<p>Lecture des tests au seuil de 1 % : 38,52 &gt; F<sub>lu</sub><sup>1 %</sup>(34, 544) = 1,69 et 4,88 &gt; F<sub>lu</sub><sup>1 %</sup>(16, 544) = 2,03. On rejette donc H<sub>0</sub> dans les deux cas : il y a des <strong>effets individuels</strong> (test d’hétérogénéité individuelle) et des <strong>effets temporels</strong> (test d’hétérogénéité temporelle), les premiers étant de loin les plus importants (67,80 % contre 4,04 % de la SCT).</p>
 </div></details>
 </div></details>
 
