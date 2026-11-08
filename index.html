@@ -131,13 +131,13 @@ details>div{padding:0 16px 8px;font-size:15.5px}
   <p class="brand">L’économétrie</p>
   <button class="menu-btn" type="button" aria-expanded="false" aria-label="Ouvrir le sommaire">Sommaire</button>
   <a href="#introduction" class="active">Introduction</a>
-  <a href="#coupe-transversale" aria-expanded="false" aria-controls="sub-coupe">Coupe transversale</a>
+  <a href="#coupe-transversale" aria-expanded="false" aria-controls="sub-coupe">Coupe transversale (rappels)</a>
   <div class="sub" id="sub-coupe" hidden>
     <a href="#ct-modele">Chapitre 1 · Le modèle et son estimation</a>
     <a href="#ct-inference">Chapitre 2 · L’inférence et les tests</a>
     <a href="#ct-hypotheses">Chapitre 3 · Les hypothèses et leurs violations</a>
   </div>
-  <a href="#series-temporelles" aria-expanded="false" aria-controls="sub-series">Séries temporelles</a>
+  <a href="#series-temporelles" aria-expanded="false" aria-controls="sub-series">Séries temporelles (rappels)</a>
   <div class="sub" id="sub-series" hidden>
     <a href="#st-bases">Chapitre 1 · Les bases : stationnarité et modèles ARMA</a>
     <a href="#st-non-stationnarite">Chapitre 2 · La non-stationnarité</a>
@@ -270,7 +270,7 @@ details>div{padding:0 16px 8px;font-size:15.5px}
 </div>
 
 <div class="part" id="coupe-transversale">
-<h2>La coupe transversale (l’initiation)</h2>
+<h2>La coupe transversale (rappels)</h2>
 <p class="lead">La coupe transversale consiste à observer <strong>plusieurs individus</strong> <strong>à un même moment</strong>. En économétrie, un « individu » désigne toute unité observée : une personne, un ménage, une entreprise, un pays. C’est le point de départ pour apprendre l’économétrie : on y maîtrise la régression linéaire sans avoir à gérer les effets du temps.</p>
 <figure class="fig"><svg viewBox="0 0 640 258" role="img" aria-label="Tableau de données en coupe transversale : une ligne par individu, une colonne par variable, une seule date" xmlns="http://www.w3.org/2000/svg"><rect x="24.0" y="52.0" width="480.0" height="28.0" rx="0" class="fpanel"/><text x="46.0" y="70.0" class="t-b" text-anchor="middle">i</text><text x="123.0" y="70.0" class="t-b" text-anchor="middle">salaire (y)</text><text x="230.0" y="70.0" class="t-b" text-anchor="middle">études (x₁)</text><text x="343.0" y="70.0" class="t-b" text-anchor="middle">expérience (x₂)</text><text x="454.0" y="70.0" class="t-b" text-anchor="middle">femme (x₃)</text><line x1="24.0" y1="80.0" x2="504.0" y2="80.0" class="grid"/><text x="46.0" y="99.0" class="t-m" text-anchor="middle">1</text><text x="123.0" y="99.0" text-anchor="middle">2 150</text><text x="230.0" y="99.0" text-anchor="middle">12</text><text x="343.0" y="99.0" text-anchor="middle">5</text><text x="454.0" y="99.0" text-anchor="middle">0</text><line x1="24.0" y1="108.0" x2="504.0" y2="108.0" class="grid"/><text x="46.0" y="127.0" class="t-m" text-anchor="middle">2</text><text x="123.0" y="127.0" text-anchor="middle">2 900</text><text x="230.0" y="127.0" text-anchor="middle">16</text><text x="343.0" y="127.0" text-anchor="middle">8</text><text x="454.0" y="127.0" text-anchor="middle">1</text><line x1="24.0" y1="136.0" x2="504.0" y2="136.0" class="grid"/><text x="46.0" y="155.0" class="t-m" text-anchor="middle">3</text><text x="123.0" y="155.0" text-anchor="middle">1 800</text><text x="230.0" y="155.0" text-anchor="middle">11</text><text x="343.0" y="155.0" text-anchor="middle">2</text><text x="454.0" y="155.0" text-anchor="middle">1</text><line x1="24.0" y1="164.0" x2="504.0" y2="164.0" class="grid"/><text x="46.0" y="183.0" class="t-m" text-anchor="middle">⋮</text><text x="123.0" y="183.0" text-anchor="middle">⋮</text><text x="230.0" y="183.0" text-anchor="middle">⋮</text><text x="343.0" y="183.0" text-anchor="middle">⋮</text><text x="454.0" y="183.0" text-anchor="middle">⋮</text><line x1="24.0" y1="192.0" x2="504.0" y2="192.0" class="grid"/><text x="46.0" y="211.0" class="t-m" text-anchor="middle">n</text><text x="123.0" y="211.0" text-anchor="middle">3 400</text><text x="230.0" y="211.0" text-anchor="middle">18</text><text x="343.0" y="211.0" text-anchor="middle">12</text><text x="454.0" y="211.0" text-anchor="middle">0</text><line x1="24.0" y1="220.0" x2="504.0" y2="220.0" class="grid"/><line x1="68.0" y1="52.0" x2="68.0" y2="220.0" class="grid"/><path d="M72,48 V40 H500 V48" class="k"/><text x="286.0" y="32.0" class="t-s" text-anchor="middle">une colonne par variable</text><path d="M514,84 H518 V216 H514" class="k"/><text x="528.0" y="146.0" class="t-s">une ligne par</text><text x="528.0" y="162.0" class="t-s">individu (n en tout)</text><text x="24.0" y="246.0" class="t-s t-m">Toutes les valeurs sont mesurées à la même date (ex. enquête de 2024).</text></svg><figcaption>Un jeu de données en coupe transversale : chaque ligne est un individu, chaque colonne une variable, toutes observées au même moment (valeurs fictives).</figcaption></figure>
 <p class="muted">Cette partie suit un exemple fil rouge : expliquer le salaire d’un individu par ses années d’études, son expérience et son sexe. Elle se termine par les outils dont la partie Données de panel aura besoin : variables muettes et test F de contraintes.</p>
@@ -665,7 +665,7 @@ details>div{padding:0 16px 8px;font-size:15.5px}
 </div>
 
 <div class="part" id="series-temporelles">
-<h2>Séries temporelles (la dynamique)</h2>
+<h2>Séries temporelles (rappels)</h2>
 <p class="lead">Une série temporelle suit <strong>une seule entité</strong> (un pays, un indice boursier, une entreprise) <strong>sur plusieurs périodes successives</strong>. Ce domaine étudie la dynamique de l’économie : comment une variable dépend de son passé, combien de temps durent les effets d’un choc, et quels équilibres relient les variables à long terme.</p>
 
 <section id="st-bases">
