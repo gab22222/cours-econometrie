@@ -25,6 +25,9 @@ nav a{display:block;padding:9px 12px;margin:2px -12px;border-radius:6px;color:va
 nav a:hover{color:var(--ink)}
 nav a.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
 nav a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+nav .sub{margin:0 0 6px}
+nav .sub[hidden]{display:none}
+nav .sub a{padding:6px 12px 6px 26px;font-size:13.5px;line-height:1.4}
 main{flex:1;min-width:0;padding:72px 56px 120px}
 section{max-width:720px;margin:0 auto 96px}
 h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:600;line-height:1.2;letter-spacing:-.01em}
@@ -100,6 +103,8 @@ details>div{padding:0 16px 8px;font-size:15.5px}
   nav{position:static;width:auto;height:auto;padding:20px 20px 12px;border-right:0;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:4px 8px}
   nav .brand{width:100%;margin-bottom:8px;font-size:18px}
   nav a{margin:0;padding:6px 10px}
+  nav .sub:not([hidden]){display:flex;flex-wrap:wrap;gap:4px 8px;width:100%;margin:0 0 4px}
+  nav .sub a{padding:4px 10px;font-size:13px}
   main{padding:40px 22px 80px}
   h2{font-size:28px}
 }
@@ -110,9 +115,23 @@ details>div{padding:0 16px 8px;font-size:15.5px}
 <nav aria-label="Sections">
   <p class="brand">L’économétrie</p>
   <a href="#introduction" class="active">Introduction</a>
-  <a href="#coupe-transversale">Coupe transversale</a>
-  <a href="#series-temporelles">Séries temporelles</a>
-  <a href="#panel">Données de panel</a>
+  <a href="#coupe-transversale" aria-expanded="false" aria-controls="sub-coupe">Coupe transversale</a>
+  <div class="sub" id="sub-coupe" hidden>
+    <a href="#ct-modele">Chapitre 1 · Le modèle et son estimation</a>
+    <a href="#ct-inference">Chapitre 2 · L’inférence et les tests</a>
+    <a href="#ct-hypotheses">Chapitre 3 · Les hypothèses et leurs violations</a>
+  </div>
+  <a href="#series-temporelles" aria-expanded="false" aria-controls="sub-series">Séries temporelles</a>
+  <div class="sub" id="sub-series" hidden>
+    <a href="#st-bases">Chapitre 1 · Les bases : stationnarité et modèles ARMA</a>
+    <a href="#st-non-stationnarite">Chapitre 2 · La non-stationnarité</a>
+    <a href="#st-multivarie">Chapitre 3 · Relier plusieurs séries</a>
+  </div>
+  <a href="#panel" aria-expanded="false" aria-controls="sub-panel">Données de panel</a>
+  <div class="sub" id="sub-panel" hidden>
+    <a href="#chapitre1">Chapitre 1 · Comprendre les données de panel</a>
+    <a href="#chapitre2">Chapitre 2 · Le modèle à effets fixes individuels</a>
+  </div>
 </nav>
 
 <main>
@@ -1235,7 +1254,7 @@ details>div{padding:0 16px 8px;font-size:15.5px}
 
 <script>
 (function(){
-  var links=[].slice.call(document.querySelectorAll("nav a"));
+  var links=[].slice.call(document.querySelectorAll("nav > a"));
   var secs=links.map(function(a){return document.querySelector(a.getAttribute("href"))});
   function update(){
     var y=window.scrollY+window.innerHeight*0.3,cur=0;
@@ -1244,6 +1263,18 @@ details>div{padding:0 16px 8px;font-size:15.5px}
   }
   window.addEventListener("scroll",update,{passive:true});
   update();
+})();
+(function(){
+  var parts=[].slice.call(document.querySelectorAll("nav > a"));
+  parts.forEach(function(a){
+    a.addEventListener("click",function(){
+      parts.forEach(function(b){
+        var id=b.getAttribute("aria-controls"); if(!id) return;
+        var open=(b===a); document.getElementById(id).hidden=!open;
+        b.setAttribute("aria-expanded",open?"true":"false");
+      });
+    });
+  });
 })();
 </script>
 </body>
