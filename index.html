@@ -29,6 +29,7 @@ nav a:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 nav .sub{margin:0 0 6px}
 nav .sub[hidden]{display:none}
 nav .sub a{padding:6px 12px 6px 26px;font-size:13.5px;line-height:1.4}
+nav .sub a.ex{padding:4px 12px 4px 40px;font-size:12.5px;line-height:1.35}
 main{flex:1;min-width:0;padding:72px 56px 120px}
 section{max-width:720px;margin:0 auto 96px}
 h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:600;line-height:1.2;letter-spacing:-.01em}
@@ -115,6 +116,7 @@ details>div{padding:0 16px 8px;font-size:15.5px}
   nav.open > a{display:flex;align-items:center;width:100%;min-height:44px;margin:4px 0 0;padding:8px 12px;font-size:16px}
   nav.open .sub,nav.open .sub[hidden]{display:block;width:100%;margin:0 0 4px}
   nav.open .sub a{display:flex;align-items:center;min-height:44px;margin:0;padding:6px 12px 6px 28px;font-size:14.5px;line-height:1.35}
+  nav.open .sub a.ex{padding-left:44px;font-size:13.5px}
   main{padding:28px 16px 72px}
   h2{font-size:28px}
   .eq{font-size:15.5px;padding:10px 12px}
@@ -146,7 +148,11 @@ details>div{padding:0 16px 8px;font-size:15.5px}
   <a href="#panel" aria-expanded="false" aria-controls="sub-panel">Données de panel (M2)</a>
   <div class="sub" id="sub-panel" hidden>
     <a href="#chapitre1">Chapitre 1 · Comprendre les données de panel</a>
+    <a href="#panel-exercice-cm1" class="ex">Exercice CM 1 - révision CC - La décomposition de la variance</a>
+    <a href="#panel-exercice-td1" class="ex">Exercice TD 1 - révision CC - Les traitements des données</a>
     <a href="#chapitre2">Chapitre 2 · Le modèle à effets fixes individuels</a>
+    <a href="#panel-exercice-cm2" class="ex">Exercice CM 2 - révision CC - Estimation MCO et variables muettes</a>
+    <a href="#panel-exercice-td2" class="ex">Exercice TD 2 - révision CC - MCO et variables muettes</a>
   </div>
 </nav>
 
@@ -1535,7 +1541,7 @@ details>div{padding:0 16px 8px;font-size:15.5px}
 <div class="eq">R²<sub>x</sub> = Σ <span class="cm">β̂</span><sup>W</sup><sub>j</sub> S<sub>yx<sub>j</sub></sub> / S<sub>yy</sub>   (part des régresseurs)<br>R²<sub>d</sub> = Σ <span class="cm">δ̂</span><sub>ki'</sub> S<sub>yd<sub>i'</sub></sub> / S<sub>yy</sub>   (part des effets individuels)<br>R²<sub>W</sub> = (Σ <span class="cm">β̂</span><sup>W</sup><sub>j</sub> S<sub>yx<sub>j</sub></sub> + Σ <span class="cm">δ̂</span><sub>ki'</sub> S<sub>yd<sub>i'</sub></sub>) / S<sub>yy</sub> = R²<sub>x</sub> + R²<sub>d</sub></div>
 <p>R²<sub>x</sub> mesure le pouvoir explicatif des variables économiques ; R²<sub>W</sub> le gonfle avec la part expliquée par les seules muettes.</p></div></details>
 
-<details class="exercise" id="panel-exercice-cm2"><summary>Exercice CM 2 - CC - Estimation MCO et variables muettes</summary><div>
+<details class="exercise" id="panel-exercice-cm2"><summary>Exercice CM 2 - révision CC - Estimation MCO et variables muettes</summary><div>
 <p><strong>Énoncé</strong></p>
 <p>On reprend les données des exercices du chapitre 1 : le solde du compte courant de <strong>35 pays</strong> de l’OCDE sur <strong>2000-2016</strong> (n = 35, p = 17, np = 595), dans le fichier <em>OCDE_cylindré.ods</em>. La variable dépendante est CC<sub>it</sub>/PIB<sub>it</sub> (<em>CcoverGDP</em> dans Gretl), avec r<sub>it</sub> le taux d’intérêt de long terme, te<sub>it</sub> les termes de l’échange et PIB<sub>it</sub> le PIB en volume (dollars constants, base 2005). L’étudiant souhaite estimer :</p>
 <div class="eq">CC<sub>it</sub>/PIB<sub>it</sub> = β<sub>1</sub> ln PIB<sub>it</sub> + β<sub>2</sub> ln(r<sub>it</sub> + 1) + β<sub>3</sub> ln te<sub>it</sub> + β<sub>4i</sub> + u<sub>it</sub></div>
@@ -1687,9 +1693,9 @@ details>div{padding:0 16px 8px;font-size:15.5px}
 <p>2°) Le test de présence des effets spécifiques montre que les muettes sont pertinentes. Les omettre (modèle 2.1), c’est <strong>omettre des variables pertinentes</strong> : les différences de niveau entre pays passent dans le terme d’erreur et sont corrélées aux variables explicatives. Il y a donc <strong>endogénéité des variables explicatives</strong>, et les estimations MCO du modèle 2.1 sont biaisées. C’est le cas illustré par les trois figures du cours au début du chapitre.</p>
 </div></details>
 </div></details>
-<details class="exercise" id="panel-exercice-td2"><summary>Exercice TD 2 - CC - MCO et variables muettes</summary><div>
+<details class="exercise" id="panel-exercice-td2"><summary>Exercice TD 2 - révision CC - MCO et variables muettes</summary><div>
 <p><strong>Énoncé</strong></p>
-<p>On reprend les données de l’Exercice CM 2 - CC (35 pays de l’OCDE, 2000-2016, n = 35, p = 17, np = 595), cette fois dans <strong>Gretl</strong>. L’étudiant souhaite estimer :</p>
+<p>On reprend les données de l’Exercice CM 2 - révision CC (35 pays de l’OCDE, 2000-2016, n = 35, p = 17, np = 595), cette fois dans <strong>Gretl</strong>. L’étudiant souhaite estimer :</p>
 <div class="eq">CC<sub>it</sub>/PIB<sub>it</sub> = β<sub>1</sub> ln PIB<sub>it</sub> + β<sub>2</sub> ln(r<sub>it</sub> + 1) + β<sub>3</sub> ln te<sub>it</sub> + β<sub>4</sub> + u<sub>it</sub></div>
 <ol>
 <li>Estimez cette fonction sous Gretl par les MCO (modèle 2.1).</li>
@@ -1697,7 +1703,7 @@ details>div{padding:0 16px 8px;font-size:15.5px}
 <li>Effectuez un test de présence des effets spécifiques individuels (fixes) sous Gretl.</li>
 <li>Test de la contribution des régresseurs : a) estimez la régression qui permettra d’effectuer ce test à l’aide du modèle 2.2 (modèle 2.4).</li>
 </ol>
-<p class="muted">Dans le corrigé, Gretl nomme les variables l_pibamount = ln PIB<sub>it</sub>, l_ltr = ln(r<sub>it</sub> + 1) et l_te = ln te<sub>it</sub> (LPIBA, Lltr et Lte dans l’Exercice CM 2 - CC). Les menus de Gretl peuvent changer légèrement de nom selon la version.</p>
+<p class="muted">Dans le corrigé, Gretl nomme les variables l_pibamount = ln PIB<sub>it</sub>, l_ltr = ln(r<sub>it</sub> + 1) et l_te = ln te<sub>it</sub> (LPIBA, Lltr et Lte dans l’Exercice CM 2 - révision CC). Les menus de Gretl peuvent changer légèrement de nom selon la version.</p>
 <details class="correction"><summary>Voir le corrigé</summary><div>
 <p><strong>1°) Modèle 2.1 · MCO empilés.</strong> Dans Gretl : menu <em>Modèle ▸ Moindres carrés ordinaires</em>, variable dépendante CcoverGDP, régresseurs const, l_pibamount, l_ltr et l_te. Résultats : <span class="cm">β̂</span><sub>4</sub> = 3,3356 (p. critique 70,44 %), <span class="cm">β̂</span><sub>1</sub> = 0,0994978 (53,62 %), <span class="cm">β̂</span><sub>2</sub> = −3,64506 (&lt; 0,01 %, ***), <span class="cm">β̂</span><sub>3</sub> = 0,317725 (86,11 %) ; SCR = 19 422,42, R² = 0,12206, F(3, 591) = 27,38889.</p>
 <div class="tw"><table>
@@ -1760,7 +1766,7 @@ details>div{padding:0 16px 8px;font-size:15.5px}
 <tr><th></th><td>Somme / moyenne</td><td></td><td>moyenne <span class="cm">β̂</span><sub>4</sub> = −12,1565</td><td>Σ = 0</td><td></td></tr>
 </table></div>
 </div></details>
-<p class="muted">Selon la version de Gretl, le modèle 2.3 (sans constante) peut afficher le même R² et le même F(37, 557) que le modèle 2.2, comme dans ce corrigé, ou un R² et un F(38, 557) calculés autrement, comme dans l’Exercice CM 2 - CC. Le tableau de la variance à utiliser reste celui du modèle 2.2.</p>
+<p class="muted">Selon la version de Gretl, le modèle 2.3 (sans constante) peut afficher le même R² et le même F(37, 557) que le modèle 2.2, comme dans ce corrigé, ou un R² et un F(38, 557) calculés autrement, comme dans l’Exercice CM 2 - révision CC. Le tableau de la variance à utiliser reste celui du modèle 2.2.</p>
 <p><strong>3°) Test de présence des effets spécifiques.</strong> Dans la fenêtre du modèle 2.2 : menu <em>Tests ▸ Omettre des variables</em>, en sélectionnant du_1 à du_34. Gretl teste H<sub>0</sub> : δ<sub>41</sub> = … = δ<sub>4,34</sub> = 0 (« les paramètres de la régression sont nuls pour les variables du_1, …, du_34 ») et affiche F(34, 557) = <strong>29,9209</strong>, p. critique 2,07e−103 ; l’omission des variables n’améliore aucun des 3 critères d’information. Le tableau de la variance correspondant :</p>
 <div class="tw"><table>
 <tr><th>Source de variation</th><th>Somme des carrés</th><th>ddl</th><th>Somme des carrés ajustée</th><th>F<sub>cal</sub></th></tr>
@@ -1769,7 +1775,7 @@ details>div{padding:0 16px 8px;font-size:15.5px}
 <tr><td>u<sub>it</sub></td><td>SCR<sub>LSDM</sub> = 6 871,757</td><td>np − k − (n − 1) = 557</td><td>12,34</td><td>—</td></tr>
 <tr><td>y<sub>it</sub></td><td>SCT = 22 122,72</td><td>np − 1 = 594</td><td>37,24</td><td>—</td></tr>
 </table></div>
-<p>F<sub>cal</sub> = 369,14 / 12,34 = 29,92 &gt; F<sub>lu</sub><sup>1 %</sup>(34, 557) ≈ 1,68 : <strong>rejet de H<sub>0</sub> à 1 %</strong>. Les effets spécifiques individuels sont présents : on garde le modèle avec muettes, et non les MCO empilés. Le test « d’omission » de Gretl sur le modèle 2.2 donne la même statistique que le test « d’ajout » des muettes au modèle 2.1 (Exercice CM 2 - CC).</p>
+<p>F<sub>cal</sub> = 369,14 / 12,34 = 29,92 &gt; F<sub>lu</sub><sup>1 %</sup>(34, 557) ≈ 1,68 : <strong>rejet de H<sub>0</sub> à 1 %</strong>. Les effets spécifiques individuels sont présents : on garde le modèle avec muettes, et non les MCO empilés. Le test « d’omission » de Gretl sur le modèle 2.2 donne la même statistique que le test « d’ajout » des muettes au modèle 2.1 (Exercice CM 2 - révision CC).</p>
 <p><strong>4°) Test de la contribution des régresseurs.</strong> a) On estime le modèle 2.4, qui ne garde que la constante et les 34 muettes (sans l_pibamount, l_ltr, l_te) : c’est le modèle sous H<sub>0</sub> : β<sub>1</sub> = β<sub>2</sub> = β<sub>3</sub> = 0.</p>
 <div class="eq">H<sub>0</sub> (modèle 2.4) : y<sub>it</sub> = Σ<sub>i'=1..34</sub> δ<sub>4i'</sub> d<sub>i'it</sub> + β<sub>4,35</sub> + u<sub>it</sub><br>H<sub>1</sub> (modèle 2.2) : y<sub>it</sub> = Σ<sub>j=1..3</sub> β<sub>j</sub> x<sub>jit</sub> + Σ<sub>i'=1..34</sub> δ<sub>4i'</sub> d<sub>i'it</sub> + β<sub>4,35</sub> + u<sub>it</sub></div>
 <p>Gretl donne pour le modèle 2.4 : const = −3,04534, SCR = 7 123,581, R² = 0,677997, F(34, 560) = 34,67984. Ses muettes ont toutes la même erreur standard (1,22334), car chaque pays a le même nombre d’observations et il n’y a pas d’autre régresseur : chaque δ̂ est simplement l’écart entre la moyenne du pays et celle de l’Afrique du Sud (la constante −3,04534 est la moyenne de l’Afrique du Sud).</p>
@@ -1825,6 +1831,17 @@ details>div{padding:0 16px 8px;font-size:15.5px}
       });
     });
   });
+})();
+(function(){
+  function openTarget(id){
+    var el=id&&document.getElementById(id); if(!el) return;
+    for(var p=el;p;p=p.parentElement){ if(p.tagName==="DETAILS") p.open=true; }
+  }
+  [].slice.call(document.querySelectorAll("nav .sub a.ex")).forEach(function(a){
+    a.addEventListener("click",function(){ openTarget(a.getAttribute("href").slice(1)); });
+  });
+  if(location.hash) openTarget(location.hash.slice(1));
+  window.addEventListener("hashchange",function(){ openTarget(location.hash.slice(1)); });
 })();
 (function(){
   var nav=document.querySelector("nav"), btn=nav.querySelector(".menu-btn");
