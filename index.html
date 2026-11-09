@@ -1687,6 +1687,104 @@ details>div{padding:0 16px 8px;font-size:15.5px}
 <p>2°) Le test de présence des effets spécifiques montre que les muettes sont pertinentes. Les omettre (modèle 2.1), c’est <strong>omettre des variables pertinentes</strong> : les différences de niveau entre pays passent dans le terme d’erreur et sont corrélées aux variables explicatives. Il y a donc <strong>endogénéité des variables explicatives</strong>, et les estimations MCO du modèle 2.1 sont biaisées. C’est le cas illustré par les trois figures du cours au début du chapitre.</p>
 </div></details>
 </div></details>
+<details class="exercise" id="panel-exercice-td2"><summary>Exercice TD 2 - CC - MCO et variables muettes</summary><div>
+<p><strong>Énoncé</strong></p>
+<p>On reprend les données de l’Exercice CM 2 - CC (35 pays de l’OCDE, 2000-2016, n = 35, p = 17, np = 595), cette fois dans <strong>Gretl</strong>. L’étudiant souhaite estimer :</p>
+<div class="eq">CC<sub>it</sub>/PIB<sub>it</sub> = β<sub>1</sub> ln PIB<sub>it</sub> + β<sub>2</sub> ln(r<sub>it</sub> + 1) + β<sub>3</sub> ln te<sub>it</sub> + β<sub>4</sub> + u<sub>it</sub></div>
+<ol>
+<li>Estimez cette fonction sous Gretl par les MCO (modèle 2.1).</li>
+<li>L’étudiant soupçonne qu’il puisse y avoir des spécificités individuelles : CC<sub>it</sub>/PIB<sub>it</sub> = β<sub>1</sub> ln PIB<sub>it</sub> + β<sub>2</sub> ln(r<sub>it</sub> + 1) + β<sub>3</sub> ln te<sub>it</sub> + β<sub>4i</sub> + u<sub>it</sub>. a) Créez les variables muettes pour chaque pays sous Gretl. b) Estimez cette fonction par les MCO avec ces nouvelles variables explicatives : modèle 2.2 pour la méthode « économe » en variables muettes, modèle 2.3 pour la méthode « non économe ».</li>
+<li>Effectuez un test de présence des effets spécifiques individuels (fixes) sous Gretl.</li>
+<li>Test de la contribution des régresseurs : a) estimez la régression qui permettra d’effectuer ce test à l’aide du modèle 2.2 (modèle 2.4).</li>
+</ol>
+<p class="muted">Dans le corrigé, Gretl nomme les variables l_pibamount = ln PIB<sub>it</sub>, l_ltr = ln(r<sub>it</sub> + 1) et l_te = ln te<sub>it</sub> (LPIBA, Lltr et Lte dans l’Exercice CM 2 - CC). Les menus de Gretl peuvent changer légèrement de nom selon la version.</p>
+<details class="correction"><summary>Voir le corrigé</summary><div>
+<p><strong>1°) Modèle 2.1 · MCO empilés.</strong> Dans Gretl : menu <em>Modèle ▸ Moindres carrés ordinaires</em>, variable dépendante CcoverGDP, régresseurs const, l_pibamount, l_ltr et l_te. Résultats : <span class="cm">β̂</span><sub>4</sub> = 3,3356 (p. critique 70,44 %), <span class="cm">β̂</span><sub>1</sub> = 0,0994978 (53,62 %), <span class="cm">β̂</span><sub>2</sub> = −3,64506 (&lt; 0,01 %, ***), <span class="cm">β̂</span><sub>3</sub> = 0,317725 (86,11 %) ; SCR = 19 422,42, R² = 0,12206, F(3, 591) = 27,38889.</p>
+<div class="tw"><table>
+<tr><th>Source de variation</th><th>Somme des carrés</th><th>ddl</th><th>Somme des carrés ajustée</th><th>F<sub>cal</sub></th></tr>
+<tr><td>l_pibamount, l_ltr, l_te</td><td>SCE<sub>LS</sub> = Σ <span class="cm">β̂</span><sub>j</sub> S<sub>yj</sub> = 2 700,30</td><td>k − 1 = 3</td><td>900,10</td><td>27,39</td></tr>
+<tr><td>u<sub>it</sub></td><td>SCR<sub>LS</sub> = ΣΣ û²<sub>it</sub> = 19 422,42</td><td>np − k = 591</td><td>32,86</td><td>—</td></tr>
+<tr><td>y<sub>it</sub> = CcoverGDP<sub>it</sub></td><td>SCT = ΣΣ (y<sub>it</sub> − ȳ<sub>..</sub>)² = 22 122,72</td><td>np − 1 = 594</td><td>37,24</td><td>—</td></tr>
+</table></div>
+<p>Le corrigé ajoute les écarts-types, racines des sommes des carrés ajustées : √32,86 = 5,73 est l’« éc. type régression » de Gretl et √37,24 = 6,10 l’« éc. type var. dép. ». Pour le modèle avec muettes (questions 2 à 4), √12,34 = 3,51.</p>
+<p><strong>2°) a) Les muettes.</strong> Les données étant déclarées en panel, Gretl crée une muette par unité (menu <em>Ajouter ▸ Variables indicatrices d’unité</em>) : du_1, …, du_35, avec du_i = 1 pour les 17 observations du pays i et 0 sinon (du_1 = AUS, …, du_35 = ZAF, dans l’ordre alphabétique des codes).</p>
+<p><strong>b) Les deux méthodes.</strong></p>
+<ul><li><strong>Méthode « économe » (modèle 2.2)</strong> : la constante et seulement 34 muettes (du_1 à du_34). L’Afrique du Sud (du_35) est le pays de référence : la constante vaut <span class="cm">β̂</span><sub>4,35</sub> = −14,7021 et chaque muette donne un écart <span class="cm">δ̂</span><sub>4i'</sub> = <span class="cm">β̂</span><sub>4i'</sub> − <span class="cm">β̂</span><sub>4,35</sub>. On obtient <span class="cm">β̂</span><sub>1</sub> = 0,739303, <span class="cm">β̂</span><sub>2</sub> = −1,12363 (***), <span class="cm">β̂</span><sub>3</sub> = 1,00238, SCR = 6 871,757, R² = 0,68938 et F(37, 557) = 33,41049.</li>
+<li><strong>Méthode « non économe » (modèle 2.3)</strong> : les 35 muettes et pas de constante (sinon, piège des muettes). Chaque muette donne directement la constante <span class="cm">β̂</span><sub>4i</sub> du pays. Les <span class="cm">β̂</span><sub>j</sub>, les résidus (SCR = 6 871,757) et le tableau de la variance sont exactement ceux du modèle 2.2, et <span class="cm">β̂</span><sub>4i</sub> = <span class="cm">δ̂</span><sub>4i</sub> + <span class="cm">β̂</span><sub>4,35</sub>.</li></ul>
+<div class="tw"><table>
+<tr><th>Source de variation</th><th>Somme des carrés</th><th>ddl</th><th>Somme des carrés ajustée</th><th>F<sub>cal</sub></th></tr>
+<tr><td>l_pibamount, l_ltr, l_te et du_1, …, du_34</td><td>SCE<sub>LSDM</sub> = Σ <span class="cm">β̂</span><sub>j</sub> S<sub>yj</sub> + Σ <span class="cm">δ̂</span><sub>4i'</sub> S<sub>yi'</sub> = 15 250,96</td><td>(k − 1) + (n − 1) = 37</td><td>412,19</td><td>33,41</td></tr>
+<tr><td>u<sub>it</sub></td><td>SCR<sub>LSDM</sub> = 6 871,757</td><td>np − k − (n − 1) = 557</td><td>12,34</td><td>—</td></tr>
+<tr><td>y<sub>it</sub></td><td>SCT = 22 122,72</td><td>np − 1 = 594</td><td>37,24</td><td>—</td></tr>
+</table></div>
+<p>Avec S<sub>yj</sub> = ΣΣ (y<sub>it</sub> − ȳ<sub>..</sub>)(x<sub>jit</sub> − x̄<sub>j..</sub>) et S<sub>yi'</sub> = ΣΣ (y<sub>it</sub> − ȳ<sub>..</sub>)(d<sub>i'it</sub> − d̄<sub>i'..</sub>). Le corrigé ajoute les écarts à la constante moyenne, <span class="cm">θ̂</span><sub>4i</sub> = <span class="cm">β̂</span><sub>4i</sub> − <span class="cm">β̂</span><sub>4</sub>, avec <span class="cm">β̂</span><sub>4</sub> = Σ <span class="cm">β̂</span><sub>4i</sub> / 35 = −12,1565 ; leur somme vaut 0 :</p>
+<details><summary>Voir les constantes et les écarts des 35 pays</summary><div>
+<p class="muted">Modèle 2.2 : écarts au pays de référence (Afrique du Sud) ; modèle 2.3 : constantes ; modèle 2.4 : écarts au pays de référence quand il n’y a que les muettes (question 4).</p>
+<div class="tw bb"><table>
+<tr><th>i</th><th>Pays</th><th><span class="cm">δ̂</span><sub>4i</sub> (2.2)</th><th><span class="cm">β̂</span><sub>4i</sub> (2.3)</th><th><span class="cm">θ̂</span><sub>4i</sub> = <span class="cm">β̂</span><sub>4i</sub> − <span class="cm">β̂</span><sub>4</sub></th><th><span class="cm">δ̂</span><sub>4i</sub> (2.4)</th></tr>
+<tr><th>1</th><td>AUS · Australie</td><td>−2,27332</td><td>−16,9754</td><td>−4,82</td><td>−1,49897</td></tr>
+<tr><th>2</th><td>AUT · Autriche</td><td>4,26726</td><td>−10,4348</td><td>1,72</td><td>5,07140</td></tr>
+<tr><th>3</th><td>BEL · Belgique</td><td>3,53836</td><td>−11,1637</td><td>0,99</td><td>4,47971</td></tr>
+<tr><th>4</th><td>CAN · Canada</td><td>0,636184</td><td>−14,0659</td><td>−1,91</td><td>2,30106</td></tr>
+<tr><th>5</th><td>CHE · Suisse</td><td>12,3741</td><td>−2,32796</td><td>9,83</td><td>13,8206</td></tr>
+<tr><th>6</th><td>CHL · Chili</td><td>1,94644</td><td>−12,7556</td><td>−0,60</td><td>1,67052</td></tr>
+<tr><th>7</th><td>CZE · Tchéquie</td><td>−0,156574</td><td>−14,8586</td><td>−2,70</td><td>0,437125</td></tr>
+<tr><th>8</th><td>DEU · Allemagne</td><td>5,50171</td><td>−9,20034</td><td>2,96</td><td>8,05521</td></tr>
+<tr><th>9</th><td>DNK · Danemark</td><td>8,48975</td><td>−6,21230</td><td>5,94</td><td>9,16105</td></tr>
+<tr><th>10</th><td>ESP · Espagne</td><td>−2,26085</td><td>−16,9629</td><td>−4,81</td><td>−0,679093</td></tr>
+<tr><th>11</th><td>FIN · Finlande</td><td>5,12099</td><td>−9,58107</td><td>2,58</td><td>5,58828</td></tr>
+<tr><th>12</th><td>FRA · France</td><td>0,769850</td><td>−13,9322</td><td>−1,78</td><td>2,96370</td></tr>
+<tr><th>13</th><td>GBR · Grande-Bretagne</td><td>−1,77745</td><td>−16,4795</td><td>−4,32</td><td>0,263164</td></tr>
+<tr><th>14</th><td>GRC · Grèce</td><td>−4,03116</td><td>−18,7332</td><td>−6,58</td><td>−4,11346</td></tr>
+<tr><th>15</th><td>HUN · Hongrie</td><td>0,445232</td><td>−14,2568</td><td>−2,10</td><td>0,141061</td></tr>
+<tr><th>16</th><td>IRL · Irlande</td><td>2,84857</td><td>−11,8535</td><td>0,30</td><td>3,05887</td></tr>
+<tr><th>17</th><td>ISL · Islande</td><td>−0,857060</td><td>−15,5591</td><td>−3,40</td><td>−3,32652</td></tr>
+<tr><th>18</th><td>ISR · Israël</td><td>5,16419</td><td>−9,53787</td><td>2,62</td><td>5,21091</td></tr>
+<tr><th>19</th><td>ITA · Italie</td><td>0,520837</td><td>−14,1812</td><td>−2,02</td><td>2,41960</td></tr>
+<tr><th>20</th><td>JPN · Japon</td><td>2,42134</td><td>−12,2807</td><td>−0,12</td><td>5,93017</td></tr>
+<tr><th>21</th><td>KOR · Corée du Sud</td><td>4,57393</td><td>−10,1281</td><td>2,03</td><td>6,10013</td></tr>
+<tr><th>22</th><td>LUX · Luxembourg</td><td>11,4533</td><td>−3,24871</td><td>8,91</td><td>10,8557</td></tr>
+<tr><th>23</th><td>LVA · Lettonie</td><td>−1,74335</td><td>−16,4454</td><td>−4,29</td><td>−2,92632</td></tr>
+<tr><th>24</th><td>MEX · Mexique</td><td>0,233713</td><td>−14,4683</td><td>−2,31</td><td>1,24971</td></tr>
+<tr><th>25</th><td>NLD · Pays-Bas</td><td>9,92932</td><td>−4,77274</td><td>7,38</td><td>11,2518</td></tr>
+<tr><th>26</th><td>NOR · Norvège</td><td>15,1163</td><td>0,414221</td><td>12,57</td><td>15,4984</td></tr>
+<tr><th>27</th><td>NZL · Nouvelle-Zélande</td><td>−0,382024</td><td>−15,0841</td><td>−2,93</td><td>−0,836793</td></tr>
+<tr><th>28</th><td>POL · Pologne</td><td>−3,41828</td><td>−18,1203</td><td>−5,96</td><td>−2,70129</td></tr>
+<tr><th>29</th><td>PRT · Portugal</td><td>−3,91752</td><td>−18,6196</td><td>−6,46</td><td>−3,67238</td></tr>
+<tr><th>30</th><td>RUS · Russie</td><td>7,50040</td><td>−7,20165</td><td>4,95</td><td>8,49172</td></tr>
+<tr><th>31</th><td>SVK · Slovaquie</td><td>−0,778939</td><td>−15,4810</td><td>−3,32</td><td>−1,02604</td></tr>
+<tr><th>32</th><td>SVN · Slovénie</td><td>4,16841</td><td>−10,5336</td><td>1,62</td><td>3,26352</td></tr>
+<tr><th>33</th><td>SWE · Suède</td><td>7,86750</td><td>−6,83456</td><td>5,32</td><td>8,79762</td></tr>
+<tr><th>34</th><td>USA · États-Unis</td><td>−4,19818</td><td>−18,9002</td><td>−6,74</td><td>−0,719157</td></tr>
+<tr><th>35</th><td>ZAF · Afrique du Sud</td><td>référence</td><td>−14,7021</td><td>−2,55</td><td>référence</td></tr>
+<tr><th></th><td>Somme / moyenne</td><td></td><td>moyenne <span class="cm">β̂</span><sub>4</sub> = −12,1565</td><td>Σ = 0</td><td></td></tr>
+</table></div>
+</div></details>
+<p class="muted">Selon la version de Gretl, le modèle 2.3 (sans constante) peut afficher le même R² et le même F(37, 557) que le modèle 2.2, comme dans ce corrigé, ou un R² et un F(38, 557) calculés autrement, comme dans l’Exercice CM 2 - CC. Le tableau de la variance à utiliser reste celui du modèle 2.2.</p>
+<p><strong>3°) Test de présence des effets spécifiques.</strong> Dans la fenêtre du modèle 2.2 : menu <em>Tests ▸ Omettre des variables</em>, en sélectionnant du_1 à du_34. Gretl teste H<sub>0</sub> : δ<sub>41</sub> = … = δ<sub>4,34</sub> = 0 (« les paramètres de la régression sont nuls pour les variables du_1, …, du_34 ») et affiche F(34, 557) = <strong>29,9209</strong>, p. critique 2,07e−103 ; l’omission des variables n’améliore aucun des 3 critères d’information. Le tableau de la variance correspondant :</p>
+<div class="tw"><table>
+<tr><th>Source de variation</th><th>Somme des carrés</th><th>ddl</th><th>Somme des carrés ajustée</th><th>F<sub>cal</sub></th></tr>
+<tr><td>l_pibamount, l_ltr, l_te</td><td>SCE<sub>LS</sub> ≈ Σ <span class="cm">β̂</span><sub>j</sub><sup>LSDM</sup> S<sub>yj</sub> = 2 700,30</td><td>k − 1 = 3</td><td>900,10</td><td>—</td></tr>
+<tr><td>du_1, …, du_34</td><td>SCE<sub>LSDM</sub> − SCE<sub>LS</sub> = Σ <span class="cm">δ̂</span><sub>4i</sub> S<sub>yi</sub> = 12 550,66</td><td>n − 1 = 34</td><td>369,14</td><td>29,92</td></tr>
+<tr><td>u<sub>it</sub></td><td>SCR<sub>LSDM</sub> = 6 871,757</td><td>np − k − (n − 1) = 557</td><td>12,34</td><td>—</td></tr>
+<tr><td>y<sub>it</sub></td><td>SCT = 22 122,72</td><td>np − 1 = 594</td><td>37,24</td><td>—</td></tr>
+</table></div>
+<p>F<sub>cal</sub> = 369,14 / 12,34 = 29,92 &gt; F<sub>lu</sub><sup>1 %</sup>(34, 557) ≈ 1,68 : <strong>rejet de H<sub>0</sub> à 1 %</strong>. Les effets spécifiques individuels sont présents : on garde le modèle avec muettes, et non les MCO empilés. Le test « d’omission » de Gretl sur le modèle 2.2 donne la même statistique que le test « d’ajout » des muettes au modèle 2.1 (Exercice CM 2 - CC).</p>
+<p><strong>4°) Test de la contribution des régresseurs.</strong> a) On estime le modèle 2.4, qui ne garde que la constante et les 34 muettes (sans l_pibamount, l_ltr, l_te) : c’est le modèle sous H<sub>0</sub> : β<sub>1</sub> = β<sub>2</sub> = β<sub>3</sub> = 0.</p>
+<div class="eq">H<sub>0</sub> (modèle 2.4) : y<sub>it</sub> = Σ<sub>i'=1..34</sub> δ<sub>4i'</sub> d<sub>i'it</sub> + β<sub>4,35</sub> + u<sub>it</sub><br>H<sub>1</sub> (modèle 2.2) : y<sub>it</sub> = Σ<sub>j=1..3</sub> β<sub>j</sub> x<sub>jit</sub> + Σ<sub>i'=1..34</sub> δ<sub>4i'</sub> d<sub>i'it</sub> + β<sub>4,35</sub> + u<sub>it</sub></div>
+<p>Gretl donne pour le modèle 2.4 : const = −3,04534, SCR = 7 123,581, R² = 0,677997, F(34, 560) = 34,67984. Ses muettes ont toutes la même erreur standard (1,22334), car chaque pays a le même nombre d’observations et il n’y a pas d’autre régresseur : chaque δ̂ est simplement l’écart entre la moyenne du pays et celle de l’Afrique du Sud (la constante −3,04534 est la moyenne de l’Afrique du Sud).</p>
+<div class="tw"><table>
+<tr><th>Source de variation</th><th>Somme des carrés</th><th>ddl</th><th>Somme des carrés ajustée</th><th>F<sub>cal</sub></th></tr>
+<tr><td>l_pibamount, l_ltr, l_te</td><td>SCE<sub>2.2</sub> − SCE<sub>2.4</sub> = SCR<sub>2.4</sub> − SCR<sub>2.2</sub> = 251,82</td><td>k − 1 = 3</td><td>83,94</td><td>6,804</td></tr>
+<tr><td>du_1, …, du_34</td><td>SCE<sub>2.4</sub> = SCT − SCR<sub>2.4</sub> = 14 999,14</td><td>n − 1 = 34</td><td>441,15</td><td>—</td></tr>
+<tr><td>u<sub>it</sub></td><td>SCR<sub>2.2</sub> = 6 871,757</td><td>np − k − (n − 1) = 557</td><td>12,34</td><td>—</td></tr>
+<tr><td>y<sub>it</sub></td><td>SCT = 22 122,72</td><td>np − 1 = 594</td><td>37,24</td><td>—</td></tr>
+</table></div>
+<div class="eq">F<sub>cal</sub> = [(SCR<sub>2.4</sub> − SCR<sub>2.2</sub>) / (k − 1)] / [SCR<sub>2.2</sub> / (np − k − (n − 1))] = (251,82 / 3) / (6 871,757 / 557) = 6,804 → F(3 ; 557)</div>
+<p>F<sub>cal</sub> = 6,804 &gt; F<sub>lu</sub><sup>1 %</sup>(3 ; 557) = 3,817 : <strong>rejet de H<sub>0</sub> à 1 %</strong>. Au moins un <span class="cm">β̂</span><sub>j</sub> est différent de 0 : les régresseurs contribuent à expliquer le solde courant. Dans Gretl, on obtient le même résultat depuis le modèle 2.4 avec <em>Tests ▸ Ajouter des variables</em> (l_pibamount, l_ltr, l_te) : F(3, 557) = 6,80399.</p>
+<p>Remarque : SCE<sub>2.4</sub> = 14 999,14 est exactement la SCE<sub>ind</sub> de l’Exercice CM 1 - révision CC : un modèle avec les seules muettes pays explique la variabilité entre les moyennes des pays, c’est-à-dire la décomposition de Buys-Ballot.</p>
+</div></details>
+</div></details>
 
 <h3>À retenir</h3>
 <ul>
