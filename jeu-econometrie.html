@@ -70,9 +70,13 @@ h2{font-size:22px;margin:0 0 6px}
 .svg-d1{fill:var(--s1)}.svg-d2{fill:var(--s2)}.svg-d3{fill:var(--s3)}.svg-dm{fill:var(--muted)}
 .svg-t{fill:var(--muted);font:11px system-ui,sans-serif}
 @media (max-width:600px){.wrap{padding:18px 14px 64px}h1{font-size:28px}.q{font-size:17px}}
+
+.chrono{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:60;font:600 12px/1 system-ui,-apple-system,sans-serif;font-variant-numeric:tabular-nums;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 9px;pointer-events:none;opacity:.92}
+@media print{.chrono{display:none}}
 </style>
 </head>
 <body>
+<div class="chrono" id="chrono" role="timer" aria-label="Temps passé sur le site">⏱ 0:00</div>
 <div class="wrap">
   <header class="top">
     <a class="back" id="back" href="index.html">← Retour au cours</a>
@@ -576,6 +580,17 @@ function finish(){
   document.getElementById('menu').addEventListener('click',home);
 }
 home();
+})();
+</script>
+<script>
+(function(){
+  var K="chrono-debut", t0=Date.now();
+  try{var v=sessionStorage.getItem(K); if(v&&!isNaN(+v)) t0=+v; else sessionStorage.setItem(K,String(t0));}catch(e){}
+  var el=document.getElementById("chrono");
+  function p(n){return (n<10?"0":"")+n;}
+  function tick(){var s=Math.max(0,Math.floor((Date.now()-t0)/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60),r=s%60;
+    el.textContent="⏱ "+(h?h+":"+p(m):m)+":"+p(r);}
+  tick(); setInterval(tick,1000);
 })();
 </script>
 </body>

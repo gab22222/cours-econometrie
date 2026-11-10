@@ -128,9 +128,14 @@ details>div{padding:0 16px 8px;font-size:15.5px}
   .fig figcaption{padding:0 12px;position:sticky;left:0}
   .tw{margin-left:-16px;margin-right:-16px;padding:0 16px}
 }
+
+.chrono{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;z-index:60;font:600 12px/1 system-ui,-apple-system,sans-serif;font-variant-numeric:tabular-nums;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 9px;pointer-events:none;opacity:.92}
+@media print{.chrono{display:none}}
+@media (max-width:820px){.chrono{top:calc(19px + env(safe-area-inset-top,0px));right:122px}}
 </style>
 </head>
 <body>
+<div class="chrono" id="chrono" role="timer" aria-label="Temps passé sur le site">⏱ 0:00</div>
 <div class="layout">
 <nav aria-label="Sections">
   <p class="brand">L’économétrie</p>
@@ -1851,6 +1856,17 @@ details>div{padding:0 16px 8px;font-size:15.5px}
   function setOpen(o){nav.classList.toggle("open",o); btn.setAttribute("aria-expanded",o?"true":"false"); btn.textContent=o?"Fermer":"Sommaire"; btn.setAttribute("aria-label",o?"Fermer le sommaire":"Ouvrir le sommaire");}
   btn.addEventListener("click",function(){setOpen(!nav.classList.contains("open"))});
   [].slice.call(nav.querySelectorAll("a")).forEach(function(a){a.addEventListener("click",function(){setOpen(false)})});
+})();
+</script>
+<script>
+(function(){
+  var K="chrono-debut", t0=Date.now();
+  try{var v=sessionStorage.getItem(K); if(v&&!isNaN(+v)) t0=+v; else sessionStorage.setItem(K,String(t0));}catch(e){}
+  var el=document.getElementById("chrono");
+  function p(n){return (n<10?"0":"")+n;}
+  function tick(){var s=Math.max(0,Math.floor((Date.now()-t0)/1000)),h=Math.floor(s/3600),m=Math.floor(s%3600/60),r=s%60;
+    el.textContent="⏱ "+(h?h+":"+p(m):m)+":"+p(r);}
+  tick(); setInterval(tick,1000);
 })();
 </script>
 </body>
