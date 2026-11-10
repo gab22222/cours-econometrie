@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jeu d’économétrie</title>
+<meta name="description" content="Jeu de révision des quatre exercices de données de panel : une erreur, et l’exercice recommence à zéro.">
+<style>
+:root{
+  --bg:#fcfcfb;--panel:#f3f3f1;--ink:#1c1f23;--muted:#5f656d;--line:#e2e2de;--accent:#2b4a7a;--accent-soft:#e8eef7;
+  --s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--ok:#1d7a4f;--ok-soft:#e3f3ea;--bad:#b3261e;--bad-soft:#f9e3e1;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#15171a;--panel:#1b1e22;--ink:#e8e9eb;--muted:#9aa0a8;--line:#2a2e33;--accent:#8fb0e6;--accent-soft:#1f2a3b;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ok:#5fcf98;--ok-soft:#173527;--bad:#ff8a80;--bad-soft:#3d2120;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#15171a;--panel:#1b1e22;--ink:#e8e9eb;--muted:#9aa0a8;--line:#2a2e33;--accent:#8fb0e6;--accent-soft:#1f2a3b;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--ok:#5fcf98;--ok-soft:#173527;--bad:#ff8a80;--bad-soft:#3d2120;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:28px 20px 80px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:28px}
+.back{color:var(--accent);text-decoration:none;font-size:15px}
+.back:hover{text-decoration:underline}
+h1,h2{font-family:Georgia,"Times New Roman",serif;font-weight:600;line-height:1.2;letter-spacing:-.01em}
+h1{font-size:34px;margin:0 0 10px}
+h2{font-size:22px;margin:0 0 6px}
+.lead{color:var(--muted);margin:0 0 24px}
+.rules{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:0 0 26px;font-size:15px}
+.rules ul{margin:6px 0 0;padding-left:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.card{display:block;text-align:left;width:100%;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;color:var(--ink);font:inherit;cursor:pointer}
+.card:hover{border-color:var(--accent)}
+.card:focus-visible,.choice:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.card .ch{font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.card b{display:block;font:600 18px/1.3 Georgia,serif;margin:4px 0 6px}
+.card .meta{font-size:14px;color:var(--muted)}
+.card .best{font-size:13px;color:var(--ok);margin-top:6px}
+.bar{height:6px;background:var(--line);border-radius:3px;overflow:hidden;margin:10px 0 18px}
+.bar>i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+.status{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:14px;color:var(--muted)}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.tag.deep{background:var(--panel);color:var(--muted);border:1px solid var(--line)}
+.bloc{font:600 15px/1.4 system-ui,sans-serif;margin:16px 0 4px;color:var(--accent)}
+.q{font-size:18px;line-height:1.55;margin:4px 0 18px}
+.choices{display:grid;gap:10px}
+.choice{display:block;width:100%;text-align:left;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink);font:inherit;cursor:pointer;overflow-x:auto}
+.choice:hover:not([disabled]){border-color:var(--accent);background:var(--accent-soft)}
+.choice[disabled]{cursor:default}
+.choice.good{border-color:var(--ok);background:var(--ok-soft)}
+.choice.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.choice.dim{opacity:.55}
+.choice table{border-collapse:collapse;font-size:14px;margin:4px 0}
+.choice td,.choice th{border:1px solid var(--line);padding:3px 8px;text-align:left}
+.choice th{color:var(--muted);font-weight:600}
+.choice svg{display:block;max-width:240px;width:100%;height:auto}
+.f{font-family:Palatino,"Palatino Linotype","Book Antiqua",Georgia,serif;font-size:1.05em}
+.feedback{margin:18px 0 0;padding:14px 16px;border-radius:10px;border-left:4px solid var(--ok);background:var(--ok-soft)}
+.feedback.bad{border-left-color:var(--bad);background:var(--bad-soft)}
+.feedback p{margin:0 0 8px}.feedback p:last-child{margin:0}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:0 18px;border-radius:8px;border:0;background:var(--accent);color:var(--bg);font:600 15px system-ui,sans-serif;cursor:pointer}
+.btn.sec{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+.end{text-align:center;padding:24px 0}
+.end .big{font:600 30px/1.2 Georgia,serif;margin:8px 0}
+.svg-ax{stroke:var(--muted);stroke-width:1}
+.svg-l1{stroke:var(--s1);stroke-width:2.2;fill:none}.svg-l2{stroke:var(--s2);stroke-width:2.2;fill:none}.svg-l3{stroke:var(--s3);stroke-width:2.2;fill:none}
+.svg-lk{stroke:var(--ink);stroke-width:2.2;fill:none}
+.svg-d1{fill:var(--s1)}.svg-d2{fill:var(--s2)}.svg-d3{fill:var(--s3)}.svg-dm{fill:var(--muted)}
+.svg-t{fill:var(--muted);font:11px system-ui,sans-serif}
+@media (max-width:600px){.wrap{padding:18px 14px 64px}h1{font-size:28px}.q{font-size:17px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="back" id="back" href="index.html">← Retour au cours</a>
+  </header>
+  <main id="app" aria-live="polite"></main>
+</div>
+<script>
+(function(){
+/* ---------- Petits schémas ---------- */
+function frame(inner){return '<svg viewBox="0 0 200 120" role="img" xmlns="http://www.w3.org/2000/svg"><line class="svg-ax" x1="14" y1="108" x2="194" y2="108"/><line class="svg-ax" x1="14" y1="6" x2="14" y2="108"/><text class="svg-t" x="190" y="104" text-anchor="end">x</text><text class="svg-t" x="18" y="16">y</text>'+inner+'</svg>';}
+var G=[[50,34,"1"],[100,60,"2"],[150,86,"3"]], OFF=[[-18,8],[-9,6],[-4,-1],[3,1],[9,-5],[17,-7]];
+function dots(cls){var s='';G.forEach(function(g){OFF.forEach(function(o){s+='<circle class="svg-d'+(cls||g[2])+'" cx="'+(g[0]+o[0])+'" cy="'+(g[1]+o[1])+'" r="2.6"/>';});});return s;}
+var IMG={
+  fe: frame(dots()+G.map(function(g){return '<line class="svg-l'+g[2]+'" x1="'+(g[0]-24)+'" y1="'+(g[1]+11)+'" x2="'+(g[0]+24)+'" y2="'+(g[1]-11)+'"/>';}).join('')),
+  pool: frame(dots('m')+'<line class="svg-lk" x1="22" y1="22" x2="182" y2="100"/>'),
+  slopes: frame([[26,46,74,22,"1"],[76,56,124,64,"2"],[126,70,174,102,"3"]].map(function(l){var s='';[.08,.25,.42,.58,.75,.92].forEach(function(t,j){s+='<circle class="svg-d'+l[4]+'" cx="'+(l[0]+t*(l[2]-l[0]))+'" cy="'+(l[1]+t*(l[3]-l[1])+[4,-3,3,-4,2,-2][j])+'" r="2.6"/>';});return s;}).join('')+'<line class="svg-l1" x1="26" y1="46" x2="74" y2="22"/><line class="svg-l2" x1="76" y1="56" x2="124" y2="64"/><line class="svg-l3" x1="126" y1="70" x2="174" y2="102"/>'),
+  same: frame([[30,"1"],[60,"2"],[88,"3"]].map(function(r){var s='';[34,58,82,106,130,154].forEach(function(x,j){s+='<circle class="svg-d'+r[1]+'" cx="'+x+'" cy="'+(r[0]+[3,-4,2,-2,4,-3][j])+'" r="2.6"/>';});return s;}).join('')+'<line class="svg-l1" x1="26" y1="30" x2="174" y2="30"/><line class="svg-l2" x1="26" y1="60" x2="174" y2="60"/><line class="svg-l3" x1="26" y1="88" x2="174" y2="88"/>')
+};
+function T(rows){return '<table>'+rows.map(function(r,i){return '<tr>'+r.map(function(c){return i===0?'<th>'+c+'</th>':'<td>'+c+'</td>';}).join('')+'</tr>';}).join('')+'</table>';}
+
+/* ---------- Questions ----------
+   Chaque étape : b = numéro de la question de l’exercice, t = titre de cette question,
+   d = 1 pour une question d’approfondissement, q = énoncé, c = [réponse, 1 si juste, pourquoi],
+   e = explication affichée quand on répond juste. */
+var EX=[
+{id:"cm1",ch:"Chapitre 1",name:"Exercice CM 1 - révision CC - La décomposition de la variance",ctx:"35 pays de l’OCDE, 2000-2016 (n = 35, p = 17, np = 595). Variable : y<sub>it</sub> = CC<sub>it</sub>/PIB<sub>it</sub>. On donne Σ<sub>i</sub>(ȳ<sub>i.</sub> − ȳ<sub>..</sub>)² = 882,3022, Σ<sub>t</sub>(ȳ<sub>.t</sub> − ȳ<sub>..</sub>)² = 25,5439 et σ<sub>y</sub> = 6,102756.",
+steps:[
+{b:1,t:"Compléter le tableau de Buys-Ballot",q:"À quoi ressemble le tableau de Buys-Ballot de y<sub>it</sub> ?",c:[
+ ["Les 35 pays en lignes, les 17 années en colonnes, avec les moyennes ȳ<sub>i.</sub> et ȳ<sub>.t</sub> dans les marges.",1,""],
+ ["Une seule colonne de 595 valeurs, rangées pays par pays.",0,"C’est le fichier de données « en long » (une ligne par couple pays-année), pas le tableau de Buys-Ballot."],
+ ["Les pays en lignes et les variables explicatives (PIB, taux, termes de l’échange) en colonnes.",0,"Le tableau de Buys-Ballot ne porte que sur une variable, croisée selon les individus et les périodes."],
+ ["Un tableau des 35 pays avec, pour chacun, le coefficient estimé de sa régression.",0,"Aucune régression n’est faite ici : on décrit seulement la variable y<sub>it</sub>."]],
+ e:"Le tableau de Buys-Ballot croise les individus (lignes) et les périodes (colonnes) ; les marges donnent les moyennes par pays et par année."},
+{b:1,d:1,t:"Compléter le tableau de Buys-Ballot",q:"Comment obtient-on la moyenne du pays i, ȳ<sub>i.</sub> ?",c:[
+ ["<span class='f'>(somme de la ligne du pays i) / p</span>, avec p = 17 années.",1,""],
+ ["<span class='f'>(somme de la ligne du pays i) / n</span>, avec n = 35 pays.",0,"Une ligne contient les p = 17 années du pays : on divise par p, pas par n."],
+ ["<span class='f'>(somme de la colonne t) / n</span>",0,"C’est la moyenne de l’année t, ȳ<sub>.t</sub>, et non celle du pays i."],
+ ["<span class='f'>(somme de la ligne du pays i) / np</span>",0,"On ne moyenne que sur les observations du pays i, soit p valeurs, pas np."]],
+ e:"Le point dans ȳ<sub>i.</sub> indique la dimension sur laquelle on a fait la moyenne : ici le temps t, donc sur p = 17 valeurs."},
+{b:1,d:1,t:"Compléter le tableau de Buys-Ballot",q:"Et la moyenne générale ȳ<sub>..</sub> ?",c:[
+ ["<span class='f'>ȳ<sub>..</sub> = (1/np) Σ<sub>i</sub>Σ<sub>t</sub> y<sub>it</sub></span> (total général / 595)",1,""],
+ ["<span class='f'>ȳ<sub>..</sub> = Σ<sub>i</sub> ȳ<sub>i.</sub></span>",0,"Il manque la division par n : la somme des 35 moyennes n’est pas une moyenne."],
+ ["<span class='f'>ȳ<sub>..</sub> = (1/(np − 1)) Σ<sub>i</sub>Σ<sub>t</sub> y<sub>it</sub></span>",0,"Le « − 1 » sert pour une variance (degrés de liberté), pas pour une moyenne."],
+ ["<span class='f'>ȳ<sub>..</sub> = (ȳ<sub>1.</sub> + ȳ<sub>.1</sub>) / 2</span>",0,"Cela mélange une moyenne de pays et une moyenne d’année : ce n’est pas la moyenne générale."]],
+ e:"Dans un panel cylindré, c’est aussi la moyenne des 35 ȳ<sub>i.</sub> (ou des 17 ȳ<sub>.t</sub>), car chaque pays a le même nombre d’observations."},
+{b:2,t:"Construire le tableau de la variance",q:"L’énoncé donne l’écart-type σ<sub>y</sub> = 6,102756 (calculé avec np − 1 au dénominateur). Comment en déduire la SCT ?",c:[
+ ["<span class='f'>SCT = (np − 1) σ²<sub>y</sub></span>",1,""],
+ ["<span class='f'>SCT = np σ²<sub>y</sub></span>",0,"σ est calculé avec np − 1 au dénominateur : il faut multiplier par np − 1 = 594."],
+ ["<span class='f'>SCT = σ²<sub>y</sub> / (np − 1)</span>",0,"C’est l’inverse : la variance est SCT/(np − 1), donc SCT = (np − 1) × variance."],
+ ["<span class='f'>SCT = (np − 1) σ<sub>y</sub></span>",0,"Il faut la variance σ², pas l’écart-type σ."]],
+ e:"σ² = SCT/(np − 1), donc SCT = 594 × 6,102756² = 22 122,72."},
+{b:2,d:1,t:"Construire le tableau de la variance",q:"Comment passe-t-on de Σ<sub>i</sub>(ȳ<sub>i.</sub> − ȳ<sub>..</sub>)² = 882,3022 à la somme des carrés inter-individuelle SCE<sub>ind</sub> ?",c:[
+ ["On multiplie par p : <span class='f'>SCE<sub>ind</sub> = p Σ<sub>i</sub>(ȳ<sub>i.</sub> − ȳ<sub>..</sub>)²</span>.",1,""],
+ ["On multiplie par n : <span class='f'>SCE<sub>ind</sub> = n Σ<sub>i</sub>(ȳ<sub>i.</sub> − ȳ<sub>..</sub>)²</span>.",0,"La moyenne d’un pays se répète sur ses p années, pas sur les n pays."],
+ ["On ne multiplie pas : SCE<sub>ind</sub> = 882,3022.",0,"La SCE se calcule sur les np observations : chaque écart (ȳ<sub>i.</sub> − ȳ<sub>..</sub>)² compte p fois."],
+ ["On divise par n − 1.",0,"Diviser par les ddl donne la somme des carrés ajustée, pas la somme des carrés."]],
+ e:"Dans SCE<sub>ind</sub> = Σ<sub>i</sub>Σ<sub>t</sub>(ȳ<sub>i.</sub> − ȳ<sub>..</sub>)², le terme ne dépend pas de t : il est répété p = 17 fois."},
+{b:2,d:1,t:"Construire le tableau de la variance",q:"Et pour la somme des carrés inter-temporelle SCE<sub>temp</sub> ?",c:[
+ ["<span class='f'>SCE<sub>temp</sub> = n Σ<sub>t</sub>(ȳ<sub>.t</sub> − ȳ<sub>..</sub>)²</span>",1,""],
+ ["<span class='f'>SCE<sub>temp</sub> = p Σ<sub>t</sub>(ȳ<sub>.t</sub> − ȳ<sub>..</sub>)²</span>",0,"La moyenne d’une année se répète sur les n pays, pas sur les p années."],
+ ["<span class='f'>SCE<sub>temp</sub> = np Σ<sub>t</sub>(ȳ<sub>.t</sub> − ȳ<sub>..</sub>)²</span>",0,"Chaque écart annuel ne compte que n fois (une fois par pays)."]],
+ e:"Symétrique de la question précédente : chaque ȳ<sub>.t</sub> est répétée pour les n = 35 pays."},
+{b:2,d:1,t:"Construire le tableau de la variance",q:"Comment obtient-on la SCR du modèle y<sub>it</sub> = a<sub>i</sub> + b<sub>t</sub> + u<sub>it</sub> ?",c:[
+ ["<span class='f'>SCR = SCT − SCE<sub>ind</sub> − SCE<sub>temp</sub></span>",1,""],
+ ["<span class='f'>SCR = SCT − SCE<sub>ind</sub></span>",0,"C’est la variabilité intra-individuelle : elle contient encore la part due aux années."],
+ ["<span class='f'>SCR = Σ<sub>i</sub>Σ<sub>t</sub>(y<sub>it</sub> − ȳ<sub>i.</sub>)²</span>",0,"Même erreur : on n’a retiré que les moyennes des pays, pas celles des années."],
+ ["<span class='f'>SCR = SCE<sub>ind</sub> − SCE<sub>temp</sub></span>",0,"La SCR est ce qui reste de la SCT, pas une différence entre les deux parts expliquées."]],
+ e:"C’est la décomposition mixte : SCT = SCE<sub>ind</sub> + SCE<sub>temp</sub> + SCR, avec SCR = ΣΣ(y<sub>it</sub> − ȳ<sub>i.</sub> − ȳ<sub>.t</sub> + ȳ<sub>..</sub>)²."},
+{b:2,d:1,t:"Construire le tableau de la variance",q:"Quels sont les degrés de liberté du tableau (n = 35, p = 17) ?",c:[
+ [T([["Individus","Périodes","Résidu","Total"],["n − 1 = 34","p − 1 = 16","(n − 1)(p − 1) = 544","np − 1 = 594"]]),1,""],
+ [T([["Individus","Périodes","Résidu","Total"],["n = 35","p = 17","np = 595","np = 595"]]),0,"Chaque somme de carrés perd un degré de liberté (on a estimé une moyenne)."],
+ [T([["Individus","Périodes","Résidu","Total"],["n − 1 = 34","p − 1 = 16","np − n = 560","np − 1 = 594"]]),0,"Le résidu a (n − 1)(p − 1) ddl : les ddl doivent s’additionner pour donner np − 1."],
+ [T([["Individus","Périodes","Résidu","Total"],["p − 1 = 16","n − 1 = 34","(n − 1)(p − 1) = 544","np − 1 = 594"]]),0,"Les ddl sont inversés : il y a n − 1 = 34 ddl pour les 35 pays."]],
+ e:"Vérification : 34 + 16 + 544 = 594 = np − 1."},
+{b:2,d:1,t:"Construire le tableau de la variance",q:"Que sont les « sommes des carrés ajustées » (a), (b), (c) ?",c:[
+ ["Chaque somme des carrés divisée par ses degrés de liberté (une variance).",1,""],
+ ["Chaque somme des carrés divisée par np.",0,"On divise par les ddl de la ligne, pas par le nombre d’observations."],
+ ["Chaque somme des carrés divisée par la SCT (les parts de R²).",0,"Ce sont les R², une autre colonne du tableau."],
+ ["Chaque somme des carrés multipliée par ses degrés de liberté.",0,"C’est une division, pas une multiplication."]],
+ e:"(a) = SCE<sub>ind</sub>/(n − 1), (b) = SCE<sub>temp</sub>/(p − 1), (c) = SCR/((n − 1)(p − 1))."},
+{b:3,t:"Tester les effets individuels",q:"Quelle est l’hypothèse nulle du test de présence des effets individuels ?",c:[
+ ["<span class='f'>H<sub>0</sub> : a<sub>1</sub> = a<sub>2</sub> = … = a<sub>35</sub></span> : tous les pays ont le même niveau (pas d’effet individuel).",1,""],
+ ["<span class='f'>H<sub>0</sub> : au moins un a<sub>i</sub> diffère des autres</span>",0,"C’est H<sub>1</sub> : H<sub>0</sub> est toujours l’hypothèse « pas d’effet »."],
+ ["<span class='f'>H<sub>0</sub> : b<sub>1</sub> = … = b<sub>17</sub> = 0</span>",0,"Ce sont les effets temporels, testés à la question suivante."],
+ ["<span class='f'>H<sub>0</sub> : la SCR est nulle</span>",0,"Le test porte sur les effets a<sub>i</sub>, pas sur les résidus."]],
+ e:"Si H<sub>0</sub> est vraie, les différences entre moyennes de pays ne sont que du hasard."},
+{b:3,d:1,t:"Tester les effets individuels",q:"Quelle statistique utilise-t-on ?",c:[
+ ["<span class='f'>F<sub>cal</sub><sup>ind</sup> = (a) / (c)</span>",1,""],
+ ["<span class='f'>F<sub>cal</sub><sup>ind</sup> = (a) / (b)</span>",0,"On compare la variance due aux pays à la variance résiduelle (c), pas à celle des années."],
+ ["<span class='f'>F<sub>cal</sub><sup>ind</sup> = (c) / (a)</span>",0,"C’est l’inverse : la variance expliquée est au numérateur."],
+ ["<span class='f'>SCE<sub>ind</sub> / SCT</span>",0,"C’est le R² individuel : il décrit, mais ne teste pas."]],
+ e:"On rapporte la variance « expliquée par les pays » à la variance « bruit » : si elle est bien plus grande, les pays comptent."},
+{b:3,d:1,t:"Tester les effets individuels",q:"Quelle loi suit F<sub>cal</sub><sup>ind</sup> sous H<sub>0</sub> ?",c:[
+ ["<span class='f'>F(n − 1 ; (n − 1)(p − 1)) = F(34 ; 544)</span>",1,""],
+ ["<span class='f'>F(544 ; 34)</span>",0,"Le premier ddl est celui du numérateur (les pays), le second celui du dénominateur (le résidu)."],
+ ["<span class='f'>F(34 ; 594)</span>",0,"Le dénominateur est le résidu, avec 544 ddl, pas le total."],
+ ["<span class='f'>Student(544)</span>",0,"On teste 34 contraintes à la fois : c’est un test F, pas un test t."]],
+ e:"Les ddl d’une loi de Fisher se lisent dans le tableau : ligne du numérateur, puis ligne du résidu."},
+{b:3,d:1,t:"Tester les effets individuels",q:"On trouve F<sub>cal</sub> = 38,52 et F<sub>lu</sub><sup>1 %</sup>(34 ; 544) ≈ 1,69. Que conclut-on ?",c:[
+ ["F<sub>cal</sub> &gt; F<sub>lu</sub> : on rejette H<sub>0</sub> à 1 %. Il y a des effets individuels.",1,""],
+ ["F<sub>cal</sub> &gt; F<sub>lu</sub> : on accepte H<sub>0</sub>, il n’y a pas d’effet individuel.",0,"Quand F<sub>cal</sub> dépasse la valeur critique, on rejette H<sub>0</sub>."],
+ ["F<sub>cal</sub> &gt; F<sub>lu</sub> : on rejette H<sub>0</sub>, donc tous les pays sont différents les uns des autres.",0,"Rejeter H<sub>0</sub> dit qu’au moins un pays diffère, pas que tous diffèrent."],
+ ["On ne peut pas conclure sans connaître la p. critique exacte.",0,"La comparaison avec la valeur lue suffit pour décider au seuil choisi."]],
+ e:"Règle : F<sub>cal</sub> &gt; F<sub>lu</sub><sup>α %</sup> ⇒ rejet de H<sub>0</sub> au seuil α %."},
+{b:4,t:"Tester les effets temporels",q:"Quelle est l’hypothèse nulle du test des effets temporels (« effet tendance ») ?",c:[
+ ["<span class='f'>H<sub>0</sub> : b<sub>1</sub> = … = b<sub>17</sub> = 0</span> : toutes les années ont le même niveau moyen.",1,""],
+ ["<span class='f'>H<sub>0</sub> : a<sub>1</sub> = … = a<sub>35</sub></span>",0,"Ce sont les effets individuels."],
+ ["<span class='f'>H<sub>0</sub> : y<sub>it</sub> augmente avec le temps</span>",0,"H<sub>0</sub> est « pas d’effet temporel », pas une tendance."]],
+ e:"Avec la normalisation Σ<sub>t</sub> b<sub>t</sub> = 0, « pas d’effet temporel » s’écrit b<sub>t</sub> = 0 pour tout t."},
+{b:4,d:1,t:"Tester les effets temporels",q:"Quelle loi suit F<sub>cal</sub><sup>temp</sup> = (b)/(c) sous H<sub>0</sub> ?",c:[
+ ["<span class='f'>F(p − 1 ; (n − 1)(p − 1)) = F(16 ; 544)</span>",1,""],
+ ["<span class='f'>F(17 ; 544)</span>",0,"17 années mais 16 ddl (p − 1)."],
+ ["<span class='f'>F(16 ; 594)</span>",0,"Le dénominateur est le résidu (544 ddl)."],
+ ["<span class='f'>F(34 ; 544)</span>",0,"C’est la loi du test des effets individuels."]],
+ e:"Le numérateur a p − 1 = 16 ddl, le dénominateur reste le résidu."},
+{b:4,d:1,t:"Tester les effets temporels",q:"Avec F<sub>cal</sub> = 4,88 &gt; F<sub>lu</sub><sup>1 %</sup> ≈ 2,03, que signifie « il y a des effets temporels » ?",c:[
+ ["Les moyennes annuelles ȳ<sub>.t</sub> diffèrent significativement : il y a des années « hautes » et des années « basses » pour tous les pays.",1,""],
+ ["Chaque pays suit sa propre tendance dans le temps.",0,"Cela serait une interaction pays × année ; le modèle additif ne la teste pas."],
+ ["Les effets temporels sont plus importants que les effets individuels.",0,"Le test dit seulement qu’ils existent ; leur importance se lit dans les R²."],
+ ["Les années n’ont aucune influence.",0,"C’est H<sub>0</sub>, qu’on vient de rejeter."]],
+ e:"Dans l’exercice, les ȳ<sub>.t</sub> varient par exemple de −2,22 (2008) à 2,78 (2016)."},
+{b:5,t:"Conclure",q:"Les deux tests rejettent H<sub>0</sub>. Comment savoir quel effet pèse le plus ?",c:[
+ ["On compare les parts de la SCT : R²<sub>ind</sub> = SCE<sub>ind</sub>/SCT et R²<sub>temp</sub> = SCE<sub>temp</sub>/SCT.",1,""],
+ ["Le test le plus significatif est forcément le plus important.",0,"La significativité dépend aussi des ddl : l’importance se mesure avec la part de variabilité expliquée."],
+ ["On regarde la SCR : si elle est grande, les effets temporels dominent.",0,"La SCR est la part non expliquée par les deux effets."],
+ ["On ne peut pas comparer deux effets significatifs.",0,"Les parts de SCT permettent justement de les comparer."]],
+ e:"Ici R²<sub>ind</sub> = 67,80 % et R²<sub>temp</sub> = 4,04 % : les différences entre pays dominent largement."},
+{b:5,d:1,t:"Conclure",q:"Quel schéma représente le modèle qu’il faudra estimer ensuite (chapitre 2) ?",c:[
+ [IMG.fe+"Une droite par pays, toutes parallèles.",1,""],
+ [IMG.pool+"Une seule droite pour tous les pays.",0,"C’est le MCO empilé : il ignore les effets individuels qu’on vient de mettre en évidence."],
+ [IMG.slopes+"Une droite par pays, chacune avec sa pente.",0,"Le modèle à effets fixes garde les mêmes pentes β<sub>j</sub> pour tous ; seule la constante change."],
+ [IMG.same+"Une droite horizontale par pays.",0,"Des droites horizontales supposent que x n’a aucun effet sur y."]],
+ e:"Les effets individuels justifient une constante propre à chaque pays (β<sub>4i</sub>), avec des pentes communes : le modèle à effets fixes."},
+{b:5,d:1,t:"Conclure",q:"Que représente la part résiduelle SCR/SCT = 28,16 % ?",c:[
+ ["La variabilité qui n’est expliquée ni par les différences entre pays ni par les différences entre années.",1,""],
+ ["La preuve que le modèle est faux.",0,"Il reste toujours une part non expliquée ; elle n’invalide pas le modèle."],
+ ["La part due aux variables explicatives (PIB, taux, termes de l’échange).",0,"Aucune variable explicative n’intervient dans ce tableau."]],
+ e:"C’est ce que des variables explicatives pourraient ensuite essayer d’expliquer."}
+]},
+
+{id:"td1",ch:"Chapitre 1",name:"Exercice TD 1 - révision CC - Les traitements des données",ctx:"Même panel (35 pays, 2000-2016), cette fois dans un tableur : une ligne par couple (pays, année), y<sub>it</sub> en colonne D, lignes 2 à 596.",
+steps:[
+{b:1,t:"Calculer la SCT",q:"Dans quel ordre calcule-t-on la SCT dans le tableur ?",c:[
+ ["On calcule ȳ<sub>..</sub>, puis une colonne (y<sub>it</sub> − ȳ<sub>..</sub>)², puis la somme de cette colonne.",1,""],
+ ["On fait la somme des y<sub>it</sub>, puis on l’élève au carré.",0,"(Σy)² n’est pas une somme d’écarts au carré."],
+ ["On calcule une colonne (y<sub>it</sub> − ȳ<sub>i.</sub>)², puis sa somme.",0,"Avec ȳ<sub>i.</sub> on obtient la variabilité intra-individuelle, pas la totale."],
+ ["On fait la somme des y²<sub>it</sub>.",0,"Il manque le centrage : SCT = Σy² − np ȳ²<sub>..</sub>, pas Σy²."]],
+ e:"SCT = ΣΣ(y<sub>it</sub> − ȳ<sub>..</sub>)² : écart de chaque observation à la moyenne générale."},
+{b:1,d:1,t:"Calculer la SCT",q:"Dans la formule <code>=(D2-$E$2)^2</code> recopiée vers le bas, à quoi servent les « $ » ?",c:[
+ ["À garder la cellule de ȳ<sub>..</sub> fixe quand on recopie la formule.",1,""],
+ ["À indiquer des montants en dollars.",0,"Le $ du tableur fige une référence ; il n’a rien à voir avec la monnaie."],
+ ["À calculer automatiquement la moyenne de la colonne E.",0,"Le $ ne calcule rien : il bloque la ligne et la colonne de la référence."]],
+ e:"Sans les $, la référence descendrait d’une ligne à chaque recopie et ne pointerait plus sur ȳ<sub>..</sub>."},
+{b:2,t:"Calculer les moyennes individuelles",q:"Le format « panel de séries longitudinales » consiste à :",c:[
+ ["Trier par pays, puis par année : les 17 années de chaque pays se suivent.",1,""],
+ ["Trier par année, puis par pays : les 35 pays de chaque année se suivent.",0,"C’est le format des séries transversales (question suivante)."],
+ ["Ne garder qu’une année pour tous les pays.",0,"Ce serait une coupe transversale : on perdrait la dimension panel."]],
+ e:"Une série longitudinale suit un individu dans le temps : on regroupe donc les observations par pays."},
+{b:2,d:1,t:"Calculer les moyennes individuelles",q:"Que calcule <code>=MOYENNE.SI($A$2:$A$596;A2;$D$2:$D$596)</code>, avec A = pays et D = y<sub>it</sub> ?",c:[
+ ["La moyenne des y<sub>it</sub> des lignes du même pays que la ligne 2 : ȳ<sub>i.</sub>.",1,""],
+ ["La moyenne des y<sub>it</sub> de la même année : ȳ<sub>.t</sub>.",0,"Le critère porte sur la colonne A (le pays), pas sur la colonne B (l’année)."],
+ ["La moyenne générale ȳ<sub>..</sub>.",0,"MOYENNE.SI ne garde que les lignes qui vérifient le critère."]],
+ e:"MOYENNE.SI(plage du critère ; critère ; plage à moyenner)."},
+{b:2,d:1,t:"Calculer les moyennes individuelles",q:"On recopie (ȳ<sub>i.</sub> − ȳ<sub>..</sub>)² sur les 595 lignes, puis on fait la somme. Qu’obtient-on directement ?",c:[
+ ["SCE<sub>ind</sub> = p Σ<sub>i</sub>(ȳ<sub>i.</sub> − ȳ<sub>..</sub>)², car chaque valeur apparaît 17 fois.",1,""],
+ ["Σ<sub>i</sub>(ȳ<sub>i.</sub> − ȳ<sub>..</sub>)² seulement ; il faut encore multiplier par 17.",0,"La colonne a 595 lignes : la répétition sur 17 années est déjà dans la somme."],
+ ["La SCT.",0,"La SCT utilise y<sub>it</sub>, pas ȳ<sub>i.</sub>."]],
+ e:"C’est l’intérêt de recopier sur les 595 lignes : la multiplication par p se fait toute seule."},
+{b:3,t:"Calculer les moyennes temporelles",q:"Pour les moyennes temporelles ȳ<sub>.t</sub> (format séries transversales), on :",c:[
+ ["Trie par année, puis par pays, et on moyenne les 35 valeurs de chaque année.",1,""],
+ ["Trie par pays, puis par année, et on moyenne les 17 valeurs de chaque pays.",0,"Cela donne ȳ<sub>i.</sub>, la moyenne d’un pays."],
+ ["Moyenne les 595 valeurs d’un coup.",0,"Cela donne ȳ<sub>..</sub>."]],
+ e:"ȳ<sub>.t</sub> = (1/n) Σ<sub>i</sub> y<sub>it</sub> : moyenne des n = 35 pays pour l’année t."},
+{b:3,d:1,t:"Calculer les moyennes temporelles",q:"La somme de la colonne (ȳ<sub>.t</sub> − ȳ<sub>..</sub>)², recopiée sur 595 lignes, vaut :",c:[
+ ["<span class='f'>SCE<sub>temp</sub> = n Σ<sub>t</sub>(ȳ<sub>.t</sub> − ȳ<sub>..</sub>)²</span>",1,""],
+ ["<span class='f'>p Σ<sub>t</sub>(ȳ<sub>.t</sub> − ȳ<sub>..</sub>)²</span>",0,"Chaque moyenne annuelle est répétée pour les n = 35 pays."],
+ ["<span class='f'>Σ<sub>t</sub>(ȳ<sub>.t</sub> − ȳ<sub>..</sub>)²</span>",0,"Les 595 lignes contiennent déjà la répétition sur les 35 pays."]],
+ e:"Même logique que pour SCE<sub>ind</sub>, avec n à la place de p."},
+{b:4,t:"Décomposer la SCT",q:"Quelle décomposition faut-il écrire ?",c:[
+ ["<span class='f'>SCT = SCE<sub>ind</sub> + SCE<sub>temp</sub> + SCR</span>",1,""],
+ ["<span class='f'>SCT = SCE<sub>ind</sub> + SCR</span>",0,"Il manque la part due aux années."],
+ ["<span class='f'>SCT = SCE<sub>ind</sub> × SCE<sub>temp</sub></span>",0,"Les sommes des carrés s’additionnent, elles ne se multiplient pas."],
+ ["<span class='f'>SCT = SCE<sub>ind</sub> + SCE<sub>temp</sub></span>",0,"Il reste toujours une part non expliquée, la SCR."]],
+ e:"C’est la décomposition « mixte » du chapitre 1."},
+{b:4,d:1,t:"Décomposer la SCT",q:"Pour calculer la SCR directement, quelle colonne crée-t-on ?",c:[
+ ["<span class='f'>u<sub>it</sub> = y<sub>it</sub> − ȳ<sub>i.</sub> − ȳ<sub>.t</sub> + ȳ<sub>..</sub></span>, puis on somme ses carrés.",1,""],
+ ["<span class='f'>y<sub>it</sub> − ȳ<sub>i.</sub> − ȳ<sub>.t</sub></span>",0,"Il faut rajouter ȳ<sub>..</sub>, retiré deux fois en enlevant ȳ<sub>i.</sub> et ȳ<sub>.t</sub>."],
+ ["<span class='f'>y<sub>it</sub> − ȳ<sub>..</sub></span>",0,"C’est l’écart total (celui de la SCT)."],
+ ["<span class='f'>y<sub>it</sub> − ȳ<sub>i.</sub></span>",0,"C’est l’écart intra-individuel : il contient encore l’effet des années."]],
+ e:"Avec ce résidu, la somme des u<sub>it</sub> vaut 0 et la somme des u²<sub>it</sub> redonne la SCR."},
+{b:4,d:1,t:"Décomposer la SCT",q:"Comment exprime-t-on le poids de chaque dimension ?",c:[
+ ["En parts de la SCT : SCE<sub>ind</sub>/SCT, SCE<sub>temp</sub>/SCT et SCR/SCT, qui font 100 % à elles trois.",1,""],
+ ["En divisant chaque somme par np.",0,"On obtiendrait des variances non ajustées, qui ne se lisent pas comme des parts."],
+ ["En comparant les F.",0,"Les F testent l’existence d’un effet ; le poids se mesure en part de SCT."]],
+ e:"Dans l’exercice : 67,80 % (pays), 4,04 % (années) et 28,16 % (résidu)."},
+{b:5,t:"Construire le tableau de Buys-Ballot",q:"Avec une table dynamique, comment place-t-on les champs ?",c:[
+ ["<em>location</em> (pays) en ligne, <em>time</em> (année) en colonne, la somme de y<sub>it</sub> en données.",1,""],
+ ["<em>time</em> en ligne et y<sub>it</sub> en colonne.",0,"y<sub>it</sub> est la valeur affichée dans les cases, pas un champ de colonne."],
+ ["<em>location</em> et <em>time</em> tous les deux en ligne.",0,"On obtiendrait une liste, pas un tableau croisé pays × années."]],
+ e:"Chaque case contient l’unique valeur y<sub>it</sub> du couple (pays, année)."},
+{b:5,d:1,t:"Construire le tableau de Buys-Ballot",q:"La table donne le total de chaque ligne et de chaque colonne. Comment en déduire les marges ?",c:[
+ [T([["ȳ<sub>i.</sub>","ȳ<sub>.t</sub>","ȳ<sub>..</sub>"],["total de la ligne / 17","total de la colonne / 35","total général / 595"]]),1,""],
+ [T([["ȳ<sub>i.</sub>","ȳ<sub>.t</sub>","ȳ<sub>..</sub>"],["total de la ligne / 35","total de la colonne / 17","total général / 595"]]),0,"Une ligne (un pays) contient 17 années ; une colonne (une année) contient 35 pays."],
+ [T([["ȳ<sub>i.</sub>","ȳ<sub>.t</sub>","ȳ<sub>..</sub>"],["total de la ligne / 17","total de la colonne / 35","total général / 594"]]),0,"Une moyenne se divise par le nombre d’observations (595), pas par les ddl."]],
+ e:"Les moyennes des marges sont celles calculées aux questions 2 et 3."},
+{b:6,t:"Construire le tableau de la variance",q:"La dernière ligne du tableau donne SCT/(np − 1) = 37,24. Qu’est-ce que c’est ?",c:[
+ ["La variance de y<sub>it</sub> ; sa racine carrée est l’écart-type σ<sub>y</sub> ≈ 6,10.",1,""],
+ ["La variance des résidus.",0,"La variance des résidus est (c) = SCR/544."],
+ ["Le F de la régression.",0,"Le F est un rapport de deux variances."]],
+ e:"C’est le lien avec l’énoncé du CM 1, qui donnait σ<sub>y</sub> = 6,102756."},
+{b:6,d:1,t:"Construire le tableau de la variance",q:"Pourquoi le tableur donne-t-il les mêmes résultats que le CM 1 ?",c:[
+ ["Ce sont les mêmes données et les mêmes formules : le TD les calcule à partir des 595 valeurs, le CM les donnait déjà résumées.",1,""],
+ ["Par coïncidence.",0,"Il n’y a aucun hasard : 882,3022 et 25,5439 sont exactement les sommes calculées dans le TD."],
+ ["Parce que le tableur arrondit les résultats.",0,"Les arrondis ne créent pas des résultats identiques."]],
+ e:"Le TD montre d’où viennent les chiffres que le CM utilise."}
+]},
+
+{id:"cm2",ch:"Chapitre 2",name:"Exercice CM 2 - révision CC - Estimation MCO et variables muettes",ctx:"CC<sub>it</sub>/PIB<sub>it</sub> = β<sub>1</sub> ln PIB<sub>it</sub> + β<sub>2</sub> ln(r<sub>it</sub> + 1) + β<sub>3</sub> ln te<sub>it</sub> + β<sub>4i</sub> + u<sub>it</sub>, 35 pays, 2000-2016. Modèle 2.1 : MCO empilés ; 2.2 : constante + 34 muettes (Afrique du Sud en référence) ; 2.3 : 35 muettes sans constante ; 2.4 : constante + 34 muettes, sans les régresseurs.",
+steps:[
+{b:1,t:"Exercice 2.1 · Le modèle MCO empilé",q:"Que suppose le modèle 2.1 (MCO empilés) ?",c:[
+ ["Une seule constante β<sub>4</sub> pour tous les pays et toutes les années.",1,""],
+ ["Une constante différente pour chaque pays.",0,"C’est le modèle 2.2, avec variables muettes."],
+ ["Une pente différente pour chaque pays.",0,"Aucun des modèles de l’exercice ne laisse varier les pentes."]],
+ e:"Les 595 observations sont « empilées » comme si elles venaient d’un seul individu."},
+{b:1,d:1,t:"Exercice 2.1 · Le tableau de la variance",q:"Gretl affiche « Éc. type var. dép. 6,102756 ». Comment en tirer la SCT ?",c:[
+ ["<span class='f'>SCT = (np − 1) × (éc. type var. dép.)²</span>",1,""],
+ ["<span class='f'>SCT = (np − k) × (éc. type de régression)²</span>",0,"Cette formule donne la SCR : l’écart-type de régression porte sur les résidus."],
+ ["<span class='f'>SCT = np × éc. type var. dép.</span>",0,"Il faut le carré de l’écart-type et np − 1."],
+ ["<span class='f'>SCT = Somme carrés résidus</span>",0,"La « somme carrés résidus » de Gretl est la SCR."]],
+ e:"Ici SCT = 594 × 6,102756² = 22 122,72 ; elle est la même pour tous les modèles, car y<sub>it</sub> ne change pas."},
+{b:1,d:1,t:"Exercice 2.1 · Le tableau de la variance",q:"Une fois SCT et SCR connues, comment obtient-on la SCE ?",c:[
+ ["<span class='f'>SCE = SCT − SCR</span>",1,""],
+ ["<span class='f'>SCE = SCR − SCT</span>",0,"La SCE serait négative : c’est SCT − SCR."],
+ ["<span class='f'>SCE = R² × SCR</span>",0,"R² = SCE/SCT, donc SCE = R² × SCT."]],
+ e:"SCE<sub>0</sub> = 22 122,72 − 19 422,42 = 2 700,30."},
+{b:1,d:1,t:"Exercice 2.1 · Le tableau de la variance",q:"Quels sont les ddl du modèle 2.1 (k = 4 coefficients, np = 595) ?",c:[
+ [T([["SCE","SCR","SCT"],["k − 1 = 3","np − k = 591","np − 1 = 594"]]),1,""],
+ [T([["SCE","SCR","SCT"],["k = 4","np − k = 591","np − 1 = 594"]]),0,"La constante ne compte pas dans la partie expliquée : k − 1 = 3."],
+ [T([["SCE","SCR","SCT"],["k − 1 = 3","np − 1 = 594","np − 1 = 594"]]),0,"Le résidu perd les k coefficients estimés : np − k."]],
+ e:"3 + 591 = 594 : les ddl s’additionnent."},
+{b:2,t:"Exercice 2.1 · Le test de contribution globale",q:"Quelle est l’hypothèse nulle du test de contribution globale du modèle 2.1 ?",c:[
+ ["<span class='f'>H<sub>0</sub> : β<sub>1</sub> = β<sub>2</sub> = β<sub>3</sub> = 0</span>",1,""],
+ ["<span class='f'>H<sub>0</sub> : β<sub>1</sub> = β<sub>2</sub> = β<sub>3</sub> = β<sub>4</sub> = 0</span>",0,"On ne teste pas la constante : le modèle contraint garde y<sub>it</sub> = β<sub>4</sub> + u<sub>it</sub>."],
+ ["<span class='f'>H<sub>0</sub> : au moins un β<sub>j</sub> ≠ 0</span>",0,"C’est H<sub>1</sub>."]],
+ e:"F<sub>cal</sub> = [SCE/(k − 1)] / [SCR/(np − k)] → F(3 ; 591)."},
+{b:2,d:1,t:"Exercice 2.1 · Le test de contribution globale",q:"Gretl donne une p. critique de 1,35e−16 pour ce F. Que conclut-on au seuil de 1 % ?",c:[
+ ["p. critique &lt; 1 % : on rejette H<sub>0</sub>, au moins un régresseur est significatif.",1,""],
+ ["p. critique &lt; 1 % : on ne rejette pas H<sub>0</sub>.",0,"Une p. critique plus petite que le seuil conduit à rejeter H<sub>0</sub>."],
+ ["p. critique &lt; 1 % : tous les régresseurs sont significatifs.",0,"Le test global dit « au moins un », pas « tous »."]],
+ e:"Règle : p. critique &lt; α ⇔ F<sub>cal</sub> &gt; F<sub>lu</sub><sup>α</sup> ⇔ rejet de H<sub>0</sub>."},
+{b:3,t:"Exercice 2.1 · Les tests de significativité",q:"<span class='f'>β̂<sub>1</sub></span> (ln PIB) = 0,0995 avec une p. critique de 53,62 %. Que conclure ?",c:[
+ ["On ne rejette pas H<sub>0</sub> : β<sub>1</sub> = 0 au seuil de 10 % : ln PIB n’est pas significatif.",1,""],
+ ["β<sub>1</sub> est significatif car 0,0995 &gt; 0.",0,"La significativité se juge avec le t ou la p. critique, pas avec le signe du coefficient."],
+ ["On a prouvé que β<sub>1</sub> = 0.",0,"Ne pas rejeter H<sub>0</sub> n’est pas la prouver."],
+ ["On rejette H<sub>0</sub>, car 53,62 % &gt; 10 %.",0,"C’est l’inverse : on rejette quand la p. critique est inférieure au seuil."]],
+ e:"t<sub>j</sub> = <span class='f'>β̂<sub>j</sub></span> / σ̂<sub>β̂j</sub> → Student(591) ; seule ln(r + 1) est significative dans le modèle 2.1."},
+{b:4,t:"Exercice 2.2 · Le modèle avec muettes",q:"Pourquoi le modèle 2.2 ne contient-il que 34 muettes (et pas 35) avec la constante ?",c:[
+ ["Les 35 muettes font toujours 1 au total, comme la constante : avec les deux, il y a colinéarité parfaite (piège des muettes).",1,""],
+ ["Pour gagner un degré de liberté.",0,"Le vrai problème est l’impossibilité d’estimer : la matrice n’est pas de plein rang."],
+ ["Parce que l’Afrique du Sud n’a pas de données.",0,"L’Afrique du Sud a ses 17 observations ; elle sert de pays de référence."],
+ ["Parce que Gretl limite le nombre de variables.",0,"C’est une contrainte mathématique, pas une limite du logiciel."]],
+ e:"C’est l’hypothèse de rang : Rang(z) = k − 1 + n."},
+{b:4,d:1,t:"Exercice 2.2 · Le modèle avec muettes",q:"Dans le modèle 2.2, que représente la constante (−14,7021) ?",c:[
+ ["La constante du pays de référence, l’Afrique du Sud : <span class='f'>β̂<sub>4,35</sub></span>.",1,""],
+ ["La constante moyenne des 35 pays, <span class='f'>β̂<sub>4</sub></span>.",0,"La moyenne β̂<sub>4</sub> se calcule à part (question 9)."],
+ ["L’écart moyen entre les pays.",0,"Les écarts sont donnés par les coefficients des muettes."]],
+ e:"Pour l’Afrique du Sud, toutes les muettes valent 0 : il ne reste que la constante."},
+{b:4,d:1,t:"Exercice 2.2 · Le modèle avec muettes",q:"Et le coefficient <span class='f'>δ̂<sub>4i</sub></span> de la muette du_i ?",c:[
+ ["L’écart de constante entre le pays i et l’Afrique du Sud : <span class='f'>δ<sub>4i</sub> = β<sub>4i</sub> − β<sub>4,35</sub></span>.",1,""],
+ ["L’écart entre le pays i et la moyenne : <span class='f'>β<sub>4i</sub> − β<sub>4</sub></span>.",0,"Cet écart à la moyenne s’appelle θ<sub>4i</sub>."],
+ ["La constante du pays i.",0,"La constante du pays i est δ̂<sub>4i</sub> + β̂<sub>4,35</sub>."]],
+ e:"C’est le modèle (c) du cours, avec la muette du pays de référence retirée."},
+{b:4,d:1,t:"Exercice 2.2 · Le tableau de la variance",q:"Quels sont les ddl du modèle 2.2 (k − 1 = 3 régresseurs, n = 35) ?",c:[
+ [T([["SCE","SCR"],["(k − 1) + (n − 1) = 37","np − K = 557, avec K = 38"]]),1,""],
+ [T([["SCE","SCR"],["k − 1 = 3","np − k = 591"]]),0,"Ce sont les ddl du modèle 2.1 : les 34 muettes comptent aussi."],
+ [T([["SCE","SCR"],["(k − 1) + n = 38","np − 38 = 557"]]),0,"La partie expliquée a K − 1 = 37 ddl (on ne compte pas la constante)."]],
+ e:"K = 38 coefficients : 3 pentes, 34 muettes et une constante."},
+{b:4,d:1,t:"Exercice 2.2 · Les tests de significativité",q:"Beaucoup de δ̂<sub>4i</sub> semblent non significatifs un par un. Qu’en conclure ?",c:[
+ ["Rien sur les effets individuels : les muettes sont multicolinéaires, il faut les tester ensemble avec un F.",1,""],
+ ["Il n’y a pas d’effets individuels.",0,"Le test d’ensemble (question 6) dit le contraire."],
+ ["Il faut supprimer les muettes non significatives.",0,"Les muettes forment un bloc : on les teste et on les garde ensemble."]],
+ e:"Un test t ne teste qu’un coefficient ; la question « y a-t-il des effets individuels ? » demande un test F joint."},
+{b:5,t:"Le pays au plus fort solde courant",q:"Comment trouver le pays au plus fort solde courant « toutes choses égales par ailleurs » dans le modèle 2.2 ?",c:[
+ ["Celui qui a le plus grand <span class='f'>δ̂<sub>4i</sub></span> (donc la plus grande constante), puisque tous partagent les mêmes pentes.",1,""],
+ ["Celui dont δ̂<sub>4i</sub> a la plus petite p. critique.",0,"La p. critique mesure la précision, pas la taille de l’effet."],
+ ["Celui dont la moyenne brute ȳ<sub>i.</sub> est la plus élevée.",0,"La moyenne brute mélange l’effet du pays et celui de ses variables explicatives : ce n’est pas « toutes choses égales par ailleurs »."],
+ ["Celui dont δ̂<sub>4i</sub> est le plus grand en valeur absolue.",0,"Un grand δ̂ négatif donne au contraire un solde faible."]],
+ e:"Dans l’exercice : la Norvège (δ̂<sub>4,26</sub> = 15,1163)."},
+{b:5,d:1,t:"Le pays au plus faible solde courant",q:"Et le plus faible ?",c:[
+ ["Celui qui a le plus petit <span class='f'>δ̂<sub>4i</sub></span> (le plus négatif).",1,""],
+ ["Celui dont δ̂<sub>4i</sub> est le plus proche de 0.",0,"Un δ̂ proche de 0 signifie seulement « proche de l’Afrique du Sud »."],
+ ["Forcément l’Afrique du Sud, car c’est la référence.",0,"La référence a δ = 0 ; un pays avec un δ̂ négatif est plus bas qu’elle."]],
+ e:"Dans l’exercice : les États-Unis (δ̂<sub>4,34</sub> = −4,19818)."},
+{b:6,t:"Le test de présence des effets spécifiques",q:"Quels modèles compare-t-on ?",c:[
+ ["Le modèle 2.1 (sans muettes, H<sub>0</sub>) et le modèle 2.2 (avec muettes, H<sub>1</sub>).",1,""],
+ ["Le modèle 2.2 et le modèle 2.3.",0,"Ce sont deux écritures du même modèle : ils ont les mêmes résidus."],
+ ["Le modèle 2.4 et le modèle 2.2.",0,"Cette comparaison teste les régresseurs (question 7)."]],
+ e:"H<sub>0</sub> : δ<sub>41</sub> = … = δ<sub>4,34</sub> = 0, soit β<sub>41</sub> = … = β<sub>4,35</sub> = β<sub>4</sub>."},
+{b:6,d:1,t:"Le test de présence des effets spécifiques",q:"Quelle ligne du tableau de la variance porte le test ?",c:[
+ ["La part des muettes, SCE<sub>1</sub> − SCE<sub>0</sub> = SCR<sub>0</sub> − SCR<sub>1</sub>, avec n − 1 = 34 ddl.",1,""],
+ ["La SCE totale du modèle 2.2, avec 37 ddl.",0,"Avec 37 ddl, on ferait le test de contribution globale."],
+ ["La SCE du modèle 2.1, avec 3 ddl.",0,"C’est la part des régresseurs seuls, pas celle des muettes."]],
+ e:"F<sub>cal</sub> = [(SCR<sub>0</sub> − SCR<sub>1</sub>)/(n − 1)] / [SCR<sub>1</sub>/(np − k − (n − 1))] → F(34 ; 557)."},
+{b:6,d:1,t:"Le test de présence des effets spécifiques",q:"Gretl affiche, pour l’ajout de du_1 à du_34 au modèle 2.1, F(34, 557) = 29,92. Pourquoi est-ce le même F que celui du tableau ?",c:[
+ ["Le test d’ajout compare les mêmes deux modèles, avec les mêmes 34 contraintes.",1,""],
+ ["Par hasard.",0,"Les deux calculs comparent exactement 2.1 et 2.2 : le résultat est forcément le même."],
+ ["Gretl arrondit les résultats.",0,"L’égalité est exacte, pas due aux arrondis."]],
+ e:"29,92 &gt; F<sub>lu</sub><sup>1 %</sup> ≈ 1,68 : les effets spécifiques sont présents, le modèle à effets fixes est retenu."},
+{b:7,t:"Le test de contribution des régresseurs",q:"Quel modèle contraint utilise-t-on pour tester les régresseurs ?",c:[
+ ["Le modèle 2.4 : la constante et les 34 muettes, sans ln PIB, ln(r + 1) ni ln te.",1,""],
+ ["Le modèle 2.1.",0,"Le modèle 2.1 enlève les muettes, pas les régresseurs."],
+ ["Un modèle avec la constante seule.",0,"Ce modèle sert au test de contribution globale."]],
+ e:"H<sub>0</sub> : β<sub>1</sub> = β<sub>2</sub> = β<sub>3</sub> = 0, les effets fixes restant présents."},
+{b:7,d:1,t:"Le test de contribution des régresseurs",q:"La SCE du modèle 2.4 vaut 14 999,14. À quoi correspond-elle ?",c:[
+ ["À la SCE<sub>ind</sub> du tableau de Buys-Ballot (CM 1) : des muettes seules expliquent les différences entre moyennes de pays.",1,""],
+ ["À la SCT.",0,"La SCT vaut 22 122,72."],
+ ["À la SCR du modèle 2.2.",0,"La SCR du modèle 2.2 vaut 6 871,76."]],
+ e:"Régresser y<sub>it</sub> sur les seules muettes pays revient à remplacer chaque y<sub>it</sub> par ȳ<sub>i.</sub>."},
+{b:7,d:1,t:"Le test de contribution des régresseurs",q:"F<sub>cal</sub> = 6,80 &gt; F<sub>lu</sub><sup>1 %</sup>(3 ; 557) ≈ 3,82, alors que les régresseurs n’expliquent que 1,14 % de plus de la SCT. Que conclure ?",c:[
+ ["Les régresseurs sont significatifs : leur apport est petit mais réel, une fois les effets fixes pris en compte.",1,""],
+ ["Ils sont inutiles, car 1,14 % est trop petit.",0,"Le test dit que cet apport n’est pas dû au hasard ; petit ne veut pas dire nul."],
+ ["Il y a une erreur : un F significatif exige un grand R².",0,"Avec 557 ddl au dénominateur, un petit apport peut être significatif."]],
+ e:"Significatif (le test) et important (la part de SCT) sont deux questions différentes."},
+{b:8,t:"Calculer les β4i",q:"Comment obtient-on la constante <span class='f'>β̂<sub>4i</sub></span> du pays i à partir du modèle 2.2 ?",c:[
+ ["<span class='f'>β̂<sub>4i</sub> = δ̂<sub>4i</sub> + β̂<sub>4,35</sub></span>",1,""],
+ ["<span class='f'>β̂<sub>4i</sub> = δ̂<sub>4i</sub> − β̂<sub>4,35</sub></span>",0,"Comme δ<sub>4i</sub> = β<sub>4i</sub> − β<sub>4,35</sub>, il faut ajouter β<sub>4,35</sub>."],
+ ["<span class='f'>β̂<sub>4i</sub> = δ̂<sub>4i</sub></span>",0,"δ̂<sub>4i</sub> est un écart à la référence, pas la constante elle-même."],
+ ["<span class='f'>β̂<sub>4i</sub> = δ̂<sub>4i</sub> + β̂<sub>4</sub></span>",0,"On ajoute la constante de la référence, pas la moyenne."]],
+ e:"Pour l’Afrique du Sud, δ = 0 et β̂<sub>4,35</sub> = −14,7021."},
+{b:9,t:"Calculer β4",q:"Comment obtient-on la constante moyenne <span class='f'>β̂<sub>4</sub></span> ?",c:[
+ ["<span class='f'>β̂<sub>4</sub> = (1/35) Σ<sub>i</sub> β̂<sub>4i</sub></span>, la moyenne des 35 constantes.",1,""],
+ ["C’est la constante du modèle 2.2.",0,"Cette constante est celle de l’Afrique du Sud."],
+ ["C’est la constante du modèle 2.1.",0,"Le modèle 2.1 est biaisé (il omet les effets fixes) : sa constante n’est pas β<sub>4</sub>."],
+ ["<span class='f'>(1/34) Σ δ̂<sub>4i</sub></span>",0,"C’est une moyenne d’écarts, pas de constantes."]],
+ e:"Dans l’exercice, β̂<sub>4</sub> = −12,1565, et θ̂<sub>4,35</sub> = β̂<sub>4,35</sub> − β̂<sub>4</sub> = −Σδ̂<sub>4i</sub>/35."},
+{b:10,t:"Exercice 2.3 · 35 muettes sans constante",q:"Qu’est-ce qui différencie le modèle 2.3 du modèle 2.2 ?",c:[
+ ["Il garde les 35 muettes sans constante : chaque coefficient de muette est directement β<sub>4i</sub> ; les β<sub>j</sub> et les résidus sont identiques.",1,""],
+ ["Ses coefficients β<sub>1</sub>, β<sub>2</sub>, β<sub>3</sub> sont différents.",0,"C’est le même modèle écrit autrement : les pentes ne changent pas."],
+ ["C’est un estimateur Within.",0,"Le Within centre les variables ; le modèle 2.3 utilise toujours des muettes."]],
+ e:"Constante + 34 muettes ou 35 muettes sans constante : les deux évitent le piège des muettes."},
+{b:10,d:1,t:"Exercice 2.3 · 35 muettes sans constante",q:"Dans le modèle 2.3, presque aucune muette n’est significative. Est-ce contradictoire avec le test des effets spécifiques ?",c:[
+ ["Non : ces tests t testent β<sub>4i</sub> = 0 (constante nulle), pas l’égalité des constantes entre pays.",1,""],
+ ["Oui : il n’y a finalement pas d’effets spécifiques.",0,"Le test des effets spécifiques porte sur l’égalité des constantes, pas sur leur nullité."],
+ ["Oui : le modèle 2.3 est faux.",0,"Il donne les mêmes résidus que le modèle 2.2 ; il est juste paramétré autrement."]],
+ e:"Une constante peut ne pas différer de 0 tout en différant des autres constantes."},
+{b:11,t:"Exercice 2.4 · Comparer les modèles 2.1 et 2.2",q:"Les coefficients changent beaucoup entre 2.1 et 2.2 (β̂<sub>2</sub> passe de −3,65 à −1,12). Pourquoi ?",c:[
+ ["Le modèle 2.1 omet les effets fixes pertinents ; ils passent dans l’erreur, corrélés aux régresseurs : endogénéité, donc estimations biaisées.",1,""],
+ ["À cause de la multicolinéarité du modèle 2.1.",0,"La multicolinéarité gonfle les écarts-types, elle ne biaise pas les coefficients."],
+ ["Parce que le modèle 2.2 utilise plus d’observations.",0,"Les deux modèles utilisent les mêmes 595 observations."],
+ ["À cause de l’hétéroscédasticité.",0,"L’hétéroscédasticité fausse les écarts-types, pas les coefficients."]],
+ e:"C’est le biais de variables omises : le test des effets spécifiques a montré que les muettes sont pertinentes."},
+{b:11,d:1,t:"Exercice 2.4 · Comparer les modèles 2.1 et 2.2",q:"Quel schéma illustre ce biais ?",c:[
+ [IMG.pool+"<br>"+IMG.fe+"Une droite commune de pente négative, alors que dans chaque pays la pente est positive.",1,""],
+ [IMG.slopes+"Des pentes différentes selon les pays.",0,"Le biais vient des niveaux différents, pas de pentes différentes."],
+ [IMG.same+"Des droites horizontales.",0,"Elles ne montrent aucun lien entre x et y, donc aucun biais de pente."]],
+ e:"C’est l’exemple du cours (compte courant et taux d’intérêt) : les MCO empilés trouvent une pente du mauvais signe."}
+]},
+
+{id:"td2",ch:"Chapitre 2",name:"Exercice TD 2 - révision CC - MCO et variables muettes",ctx:"Même modèle que le CM 2, estimé dans Gretl (variables l_pibamount, l_ltr, l_te ; muettes du_1 à du_35).",
+steps:[
+{b:1,t:"Estimer le modèle 2.1",q:"Quelle régression lance-t-on pour le modèle 2.1 ?",c:[
+ ["CcoverGDP sur la constante, l_pibamount, l_ltr et l_te.",1,""],
+ ["CcoverGDP sur l_pibamount, l_ltr et l_te, sans constante.",0,"Le modèle 2.1 a une constante β<sub>4</sub>."],
+ ["CcoverGDP sur la constante et du_1 à du_35.",0,"Les muettes n’apparaissent qu’à partir du modèle 2.2 (et pas toutes avec la constante)."]],
+ e:"C’est la régression « MCO empilés » : une seule constante pour tous."},
+{b:1,d:1,t:"Estimer le modèle 2.1",q:"Le corrigé ajoute une colonne « écart-type » : √32,86 = 5,73. À quoi correspond 5,73 dans Gretl ?",c:[
+ ["À l’« éc. type de régression » : <span class='f'>√(SCR/(np − k))</span>.",1,""],
+ ["À l’« éc. type var. dép. ».",0,"Celui-ci vaut √(SCT/(np − 1)) = 6,10."],
+ ["À l’erreur standard de β̂<sub>1</sub>.",0,"Les erreurs standards des coefficients sont dans le tableau des coefficients."]],
+ e:"C’est l’écart-type estimé des erreurs u<sub>it</sub>."},
+{b:2,t:"Créer les variables muettes",q:"Que vaut la muette du_i créée par Gretl ?",c:[
+ ["1 pour les 17 observations du pays i, 0 pour toutes les autres.",1,""],
+ ["1 pour l’année i, 0 sinon.",0,"Ce serait une muette temporelle ; du_i est une muette d’unité (de pays)."],
+ ["La valeur de y<sub>it</sub> pour le pays i.",0,"Une muette ne prend que les valeurs 0 et 1."]],
+ e:"du_1 = Australie, …, du_35 = Afrique du Sud, dans l’ordre alphabétique des codes."},
+{b:2,d:1,t:"Les deux méthodes",q:"Quelle est la méthode « économe » en variables muettes ?",c:[
+ ["La constante et 34 muettes (modèle 2.2).",1,""],
+ ["Les 35 muettes sans constante (modèle 2.3).",0,"C’est la méthode « non économe » : elle utilise toutes les muettes."],
+ ["La constante et les 35 muettes.",0,"Impossible : c’est le piège des muettes."]],
+ e:"Économe = une muette de moins, remplacée par la constante."},
+{b:2,d:1,t:"Les deux méthodes",q:"Qu’est-ce qui est identique entre les modèles 2.2 et 2.3 ?",c:[
+ ["Les β̂<sub>j</sub>, les résidus (SCR = 6 871,757) et donc le tableau de la variance.",1,""],
+ ["Les coefficients des muettes.",0,"2.2 donne des écarts δ̂<sub>4i</sub>, 2.3 donne des constantes β̂<sub>4i</sub>."],
+ ["Rien : ce sont deux modèles différents.",0,"C’est le même modèle, écrit avec deux jeux de variables."]],
+ e:"Les deux modèles ajustent exactement les mêmes valeurs."},
+{b:2,d:1,t:"Les deux méthodes",q:"Comment passe-t-on d’un coefficient de muette du modèle 2.2 à celui du modèle 2.3 ?",c:[
+ ["Coefficient de du_i dans 2.3 = coefficient de du_i dans 2.2 + constante de 2.2.",1,""],
+ ["Ils sont égaux.",0,"Dans 2.2, c’est un écart à l’Afrique du Sud ; dans 2.3, la constante du pays."],
+ ["Coefficient de du_i dans 2.3 = coefficient dans 2.2 − constante de 2.2.",0,"β<sub>4i</sub> = δ<sub>4i</sub> + β<sub>4,35</sub> : c’est une addition."]],
+ e:"Pour l’Australie : −2,27332 + (−14,7021) = −16,9754."},
+{b:2,d:1,t:"Les écarts θ",q:"Le corrigé calcule <span class='f'>θ̂<sub>4i</sub> = β̂<sub>4i</sub> − β̂<sub>4</sub></span>. Quelle propriété ont ces écarts ?",c:[
+ ["Leur somme vaut 0, car β̂<sub>4</sub> est la moyenne des β̂<sub>4i</sub>.",1,""],
+ ["Ils sont égaux aux δ̂<sub>4i</sub>.",0,"δ̂ est un écart à l’Afrique du Sud, θ̂ un écart à la moyenne."],
+ ["Ils sont tous positifs.",0,"Des écarts à une moyenne sont positifs et négatifs."]],
+ e:"θ̂<sub>4i</sub> &gt; 0 : le pays est au-dessus de la constante moyenne ; θ̂<sub>4i</sub> &lt; 0 : en dessous."},
+{b:3,t:"Tester les effets spécifiques dans Gretl",q:"Depuis le modèle 2.2, quel test lance-t-on ?",c:[
+ ["Un test d’omission des variables du_1 à du_34.",1,""],
+ ["Un test d’omission de l_ltr.",0,"On teste les muettes, pas un régresseur."],
+ ["Un test d’ajout de du_35.",0,"Ajouter du_35 avec la constante recréerait le piège des muettes."]],
+ e:"Gretl affiche alors F(34, 557) = 29,9209."},
+{b:3,d:1,t:"Tester les effets spécifiques dans Gretl",q:"Gretl écrit « Hypothèse nulle : les paramètres de la régression sont nuls pour les variables du_1, …, du_34 ». Cela signifie :",c:[
+ ["H<sub>0</sub> : δ<sub>41</sub> = … = δ<sub>4,34</sub> = 0, il n’y a pas d’effets spécifiques.",1,""],
+ ["H<sub>0</sub> : les pays ont tous un effet différent.",0,"C’est H<sub>1</sub>."],
+ ["H<sub>0</sub> : la constante est nulle.",0,"La constante n’est pas dans la liste des variables testées."]],
+ e:"Tous les δ nuls ⇔ toutes les constantes égales à celle de l’Afrique du Sud."},
+{b:3,d:1,t:"Tester les effets spécifiques dans Gretl",q:"Gretl ajoute « L’omission de variables améliore 0 parmi 3 critères d’information ». Qu’en déduire ?",c:[
+ ["Retirer les muettes dégrade les trois critères (AIC, BIC, HQ) : il vaut mieux les garder.",1,""],
+ ["Les muettes ne servent à rien.",0,"C’est l’inverse : les retirer n’améliore aucun critère."],
+ ["Le test n’a pas pu être calculé.",0,"Le test a bien été calculé (F = 29,92)."]],
+ e:"Les critères d’information confirment le test F."},
+{b:3,d:1,t:"Tester les effets spécifiques dans Gretl",q:"Le test d’omission sur le modèle 2.2 donne le même F que le test d’ajout des muettes au modèle 2.1 (CM 2). Pourquoi ?",c:[
+ ["Les deux tests comparent les mêmes modèles, 2.1 et 2.2, avec les mêmes contraintes.",1,""],
+ ["Parce que Gretl réutilise le dernier résultat.",0,"Gretl recalcule le test ; il retombe sur le même résultat parce que les modèles comparés sont les mêmes."],
+ ["Par hasard.",0,"Omettre les muettes de 2.2 ou les ajouter à 2.1 revient au même."]],
+ e:"Le sens (ajout ou omission) ne change rien : H<sub>0</sub> = modèle sans muettes."},
+{b:4,t:"Tester les régresseurs",q:"Quelle régression estime-t-on pour le modèle 2.4 ?",c:[
+ ["CcoverGDP sur la constante et du_1 à du_34, sans l_pibamount, l_ltr et l_te.",1,""],
+ ["CcoverGDP sur l_pibamount, l_ltr et l_te seulement.",0,"C’est le modèle 2.1 sans constante ; il ne correspond à aucune hypothèse du test."],
+ ["CcoverGDP sur la constante seule.",0,"Il faut garder les muettes : on teste les régresseurs en présence des effets fixes."]],
+ e:"Le modèle 2.4 est le modèle sous H<sub>0</sub> : β<sub>1</sub> = β<sub>2</sub> = β<sub>3</sub> = 0."},
+{b:4,d:1,t:"Tester les régresseurs",q:"Dans le modèle 2.4, toutes les muettes ont la même erreur standard (1,22334). Pourquoi ?",c:[
+ ["Le panel est cylindré et il n’y a pas d’autre régresseur : chaque δ̂ est l’écart entre deux moyennes de 17 observations.",1,""],
+ ["Par coïncidence.",0,"C’est une conséquence directe du nombre égal d’observations par pays."],
+ ["À cause de la multicolinéarité.",0,"La multicolinéarité donnerait des erreurs standards différentes et gonflées, pas identiques."]],
+ e:"Chaque δ̂<sub>4i</sub> = ȳ<sub>i.</sub> − ȳ<sub>Afrique du Sud</sub>, calculé avec le même nombre d’observations."},
+{b:4,d:1,t:"Tester les régresseurs",q:"La constante du modèle 2.4 vaut −3,04534. Qu’est-ce que c’est ?",c:[
+ ["La moyenne de l’Afrique du Sud (pays de référence) sur 2000-2016.",1,""],
+ ["La moyenne générale ȳ<sub>..</sub>.",0,"La moyenne générale vaut 0,2284."],
+ ["La constante β̂<sub>4,35</sub> du modèle 2.2.",0,"Celle-ci (−14,7021) tient compte des régresseurs."]],
+ e:"Sans régresseurs, la constante d’un pays est simplement sa moyenne."},
+{b:4,d:1,t:"Tester les régresseurs",q:"Quelle est la statistique du test de contribution des régresseurs ?",c:[
+ ["<span class='f'>F = [(SCR<sub>2.4</sub> − SCR<sub>2.2</sub>)/(k − 1)] / [SCR<sub>2.2</sub>/(np − k − (n − 1))]</span>",1,""],
+ ["<span class='f'>F = [(SCR<sub>2.2</sub> − SCR<sub>2.4</sub>)/(k − 1)] / [SCR<sub>2.4</sub>/(np − k − (n − 1))]</span>",0,"Le modèle contraint (2.4) a la plus grande SCR ; le dénominateur utilise le modèle complet (2.2)."],
+ ["<span class='f'>F = [(SCR<sub>2.4</sub> − SCR<sub>2.2</sub>)/(n − 1)] / [SCR<sub>2.2</sub>/(np − k − (n − 1))]</span>",0,"On teste k − 1 = 3 régresseurs : 3 ddl au numérateur, pas 34."]],
+ e:"F = 6,804 → F(3 ; 557), supérieur à F<sub>lu</sub><sup>1 %</sup> ≈ 3,82 : les régresseurs sont contributifs."},
+{b:4,d:1,t:"Tester les régresseurs",q:"Comment obtenir ce test directement dans Gretl ?",c:[
+ ["Depuis le modèle 2.4, un test d’ajout de l_pibamount, l_ltr et l_te.",1,""],
+ ["Depuis le modèle 2.4, un test d’omission de du_1 à du_34.",0,"On testerait les muettes (sans régresseurs), pas les régresseurs."],
+ ["Depuis le modèle 2.1, un test d’ajout de du_1 à du_34.",0,"C’est le test des effets spécifiques."]],
+ e:"Gretl donne F(3, 557) = 6,80399 : le même résultat que le calcul à la main."}
+]}
+];
+
+/* ---------- Moteur du jeu ---------- */
+var app=document.getElementById('app');
+if(location.protocol==='file:'){document.getElementById('back').href='cours-econometrie.html';}
+function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v);}catch(e){return null;}}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}return a;}
+var cur=null, idx=0;
+function home(){
+  cur=null;
+  var h='<h1>Jeu d’économétrie</h1><p class="lead">Révise les quatre exercices des données de panel, question après question.</p>';
+  h+='<div class="rules"><b>Règles</b><ul><li>Choisis un exercice : les questions suivent l’ordre de ses questions.</li><li>Après une bonne réponse, des questions d’approfondissement creusent le même point avant de passer à la suite.</li><li>Une seule erreur, et l’exercice recommence à zéro.</li><li>Aucun calcul n’est nécessaire : il faut reconnaître la bonne méthode, la bonne formule ou le bon raisonnement.</li></ul></div>';
+  h+='<div class="cards">';
+  EX.forEach(function(x,i){
+    var best=+(store('jeu-best-'+x.id)||0), done=store('jeu-done-'+x.id)==='1';
+    h+='<button class="card" data-i="'+i+'"><span class="ch">'+x.ch+'</span><b>'+x.name+'</b><span class="meta">'+x.steps.length+' questions</span>'+
+      (done?'<div class="best">✓ Exercice déjà réussi en entier</div>':(best?'<div class="best">Meilleure série : '+best+' / '+x.steps.length+'</div>':''))+'</button>';
+  });
+  h+='</div>';
+  app.innerHTML=h;
+  [].forEach.call(app.querySelectorAll('.card'),function(b){b.addEventListener('click',function(){start(+b.getAttribute('data-i'));});});
+  window.scrollTo(0,0);
+}
+function start(i){cur=EX[i]; idx=0; show();}
+function show(){
+  var s=cur.steps[idx], n=cur.steps.length;
+  var h='<div class="status"><b style="color:var(--ink)">'+cur.name+'</b></div>';
+  h+='<div class="bar"><i style="width:'+(100*idx/n)+'%"></i></div>';
+  h+='<div class="status"><span>Question '+(idx+1)+' / '+n+'</span>'+(s.d?'<span class="tag deep">Approfondissement</span>':'<span class="tag">Question de l’exercice</span>')+'</div>';
+  if(idx===0) h+='<p class="lead" style="margin:14px 0 0;font-size:15px">'+cur.ctx+'</p>';
+  h+='<div class="bloc">'+s.t+'</div><div class="q">'+s.q+'</div><div class="choices">';
+  var order=shuffle(s.c.map(function(c,k){return k;}));
+  order.forEach(function(k){h+='<button class="choice" data-k="'+k+'">'+s.c[k][0]+'</button>';});
+  h+='</div><div id="fb"></div>';
+  app.innerHTML=h;
+  [].forEach.call(app.querySelectorAll('.choice'),function(b){b.addEventListener('click',function(){answer(+b.getAttribute('data-k'),b);});});
+  window.scrollTo(0,0);
+}
+function answer(k,btn){
+  var s=cur.steps[idx], ok=s.c[k][1]===1, n=cur.steps.length;
+  [].forEach.call(app.querySelectorAll('.choice'),function(b){b.disabled=true; var kk=+b.getAttribute('data-k'); if(s.c[kk][1]===1) b.classList.add('good'); else if(b!==btn) b.classList.add('dim');});
+  var fb=document.getElementById('fb');
+  if(ok){
+    var best=+(store('jeu-best-'+cur.id)||0); if(idx+1>best) store('jeu-best-'+cur.id,idx+1);
+    fb.innerHTML='<div class="feedback"><p><b>Bonne réponse.</b> '+s.e+'</p></div><div class="actions"><button class="btn" id="next">'+(idx+1<n?'Question suivante':'Terminer l’exercice')+'</button></div>';
+    document.getElementById('next').addEventListener('click',function(){idx++; if(idx<n) show(); else finish();});
+    document.getElementById('next').focus();
+  } else {
+    btn.classList.remove('dim'); btn.classList.add('wrong');
+    fb.innerHTML='<div class="feedback bad"><p><b>Raté : l’exercice recommence à zéro.</b></p><p>'+s.c[k][2]+'</p><p>La bonne réponse est en vert. '+s.e+'</p></div><div class="actions"><button class="btn" id="again">Recommencer l’exercice</button><button class="btn sec" id="menu">Changer d’exercice</button></div>';
+    document.getElementById('again').addEventListener('click',function(){idx=0; show();});
+    document.getElementById('menu').addEventListener('click',home);
+    document.getElementById('again').focus();
+  }
+}
+function finish(){
+  store('jeu-done-'+cur.id,'1');
+  app.innerHTML='<div class="end"><div class="bar"><i style="width:100%"></i></div><p class="big">Exercice maîtrisé !</p><p>Tu as enchaîné les '+cur.steps.length+' questions de « '+cur.name+' » sans erreur.</p><div class="actions" style="justify-content:center"><button class="btn" id="again">Rejouer</button><button class="btn sec" id="menu">Choisir un autre exercice</button></div></div>';
+  document.getElementById('again').addEventListener('click',function(){idx=0; show();});
+  document.getElementById('menu').addEventListener('click',home);
+}
+home();
+})();
+</script>
+</body>
+</html>

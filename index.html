@@ -30,6 +30,7 @@ nav .sub{margin:0 0 6px}
 nav .sub[hidden]{display:none}
 nav .sub a{padding:6px 12px 6px 26px;font-size:13.5px;line-height:1.4}
 nav .sub a.ex{padding:4px 12px 4px 40px;font-size:12.5px;line-height:1.35}
+nav .nav-extra{margin-top:18px;padding-top:12px;border-top:1px solid var(--line)}
 main{flex:1;min-width:0;padding:72px 56px 120px}
 section{max-width:720px;margin:0 auto 96px}
 h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:600;line-height:1.2;letter-spacing:-.01em}
@@ -111,12 +112,14 @@ details>div{padding:0 16px 8px;font-size:15.5px}
   nav .brand{flex:1;margin:0;font-size:18px}
   .menu-btn{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:0;border-radius:8px;background:var(--accent-soft);color:var(--accent);font:600 15px system-ui,-apple-system,sans-serif;cursor:pointer}
   .menu-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  nav > a,nav .sub,nav .sub[hidden]{display:none}
+  nav > a,nav .sub,nav .sub[hidden],nav .nav-extra{display:none}
   nav.open{padding-bottom:12px}
   nav.open > a{display:flex;align-items:center;width:100%;min-height:44px;margin:4px 0 0;padding:8px 12px;font-size:16px}
   nav.open .sub,nav.open .sub[hidden]{display:block;width:100%;margin:0 0 4px}
   nav.open .sub a{display:flex;align-items:center;min-height:44px;margin:0;padding:6px 12px 6px 28px;font-size:14.5px;line-height:1.35}
   nav.open .sub a.ex{padding-left:44px;font-size:13.5px}
+  nav.open .nav-extra{display:block;width:100%;margin-top:8px;padding-top:8px}
+  nav.open .nav-extra a{display:flex;align-items:center;min-height:44px;margin:0;padding:8px 12px;font-size:16px}
   main{padding:28px 16px 72px}
   h2{font-size:28px}
   .eq{font-size:15.5px;padding:10px 12px}
@@ -154,6 +157,7 @@ details>div{padding:0 16px 8px;font-size:15.5px}
     <a href="#panel-exercice-cm2" class="ex">Exercice CM 2 - révision CC - Estimation MCO et variables muettes</a>
     <a href="#panel-exercice-td2" class="ex">Exercice TD 2 - révision CC - MCO et variables muettes</a>
   </div>
+  <div class="nav-extra"><a href="jeu-econometrie.html">Jeu économétrie</a></div>
 </nav>
 
 <main>
