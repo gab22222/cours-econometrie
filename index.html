@@ -164,7 +164,7 @@ details>div{padding:0 16px 8px;font-size:15.5px}
     <a href="#panel-exercice-cm2" class="ex">Exercice CM 2 - révision CC - Estimation MCO et variables muettes</a>
     <a href="#panel-exercice-td2" class="ex">Exercice TD 2 - révision CC - MCO et variables muettes</a>
   </div>
-  <div class="nav-extra"><a href="jeu-econometrie.html">Jeu économétrie</a></div>
+  <div class="nav-extra"><a href="jeu-econometrie.html">Jeu économétrie</a><a href="index.html" id="dl-site" download="cours-econometrie.html">Télécharger le site (.html)</a></div>
 </nav>
 
 <main>
@@ -1841,6 +1841,10 @@ details>div{padding:0 16px 8px;font-size:15.5px}
       });
     });
   });
+})();
+(function(){
+  var dl=document.getElementById("dl-site"); if(!dl) return;
+  if(location.protocol==="file:"){ var f=decodeURIComponent(location.pathname.split("/").pop()||"cours-econometrie.html"); dl.setAttribute("href",f); }
 })();
 (function(){
   function openTarget(id){
